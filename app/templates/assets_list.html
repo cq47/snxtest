@@ -1,0 +1,655 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load maintags %}
+
+{% block title %}
+    Assets
+{% endblock %}
+
+{% block imports %}
+    <script src="{% static 'js/row_ui_utils.js' %}"></script>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/assets_list.css' %}">
+
+    <style>
+        .btn {
+            width: auto;
+            padding: 5px;
+            padding-inline: 10px;
+            border-radius: 10px;
+            background-color: var(--red);
+            color: var(--text);
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.2s ease;
+            height: 28.5px;
+        }
+        .btn.active {
+            opacity: 1;
+        }
+        .btn.active:hover {
+            transform: scale(1.02);
+        }
+
+        {% if user.is_admin %}
+            a.selected {
+                background-color: #5C7AFF5b;
+            }
+            a.selected:hover {
+                background-color: #5C7AFFb5!important;
+            }
+
+            .locked {
+                opacity: 1!important;
+            }
+            .locked:hover {
+                transform: scale(1.05);
+            }
+        {% endif %}
+
+        a.op0 {
+            display: none;
+        }
+
+        .search-input {
+            border: 1px solid var(--black-hover-hover);
+            transition: all 0.2s ease;
+            width: 200px;
+        }
+        .search-input:focus {
+            border: 1px solid var(--blue);
+            background-color: var(--black-hover-hover);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row-ui fc ch p20" style="height: calc(100vh - 163px)">
+        <div class="fr jb">
+            {% if not user.is_admin %}
+                <div class="input-select">
+                    <select name="blue-type">
+                        <option {% if request.GET.asset_type == 'stocks' %}selected{% endif %} value="stocks">Stocks</option>
+                        <option {% if request.GET.asset_type == 'etfs' %}selected{% endif %} value="etfs">ETFs</option>
+                        <option {% if request.GET.asset_type == 'options' %}selected{% endif %} value="options">Options</option>
+                        <option {% if request.GET.asset_type == 'commodities' %}selected{% endif %} value="commodities">Commodities</option>
+                    </select>
+                    <span>
+                        <svg width="8" height="14" viewBox="0 0 8 14">
+                            <path fill="none" fill-rule="evenodd" stroke="#5C7AFF" stroke-linecap="square" stroke-width="1.5" d="M2 2l4 5-4 5"></path>
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="type fr ml20">
+                    <div data-type="all" class="active mr10"><span>All</span></div>
+                    <div data-type="gainers" class="mr10"><span>{% if asset_type_is_option %}Call{% else %}Gainers{% endif %}</span></div>
+                    <div data-type="losers"><span>{% if asset_type_is_option %}Put{% else %}Losers{% endif %}</span></div>
+                </div>
+            {% else %}
+                <div class="type fr ml20">
+                    <div data-type="stocks" class="{% if request.GET.asset_type == 'stocks' %}active{% endif %} mr10"><span>Stocks</span></div>
+                    <div data-type="etfs" class="{% if request.GET.asset_type == 'etfs' %}active{% endif %} mr10"><span>ETFs</span></div>
+                    <div data-type="options" class="{% if request.GET.asset_type == 'options' %}active{% endif %} mr10"><span>Options</span></div>
+                    <div data-type="commodities" class="{% if request.GET.asset_type == 'commodities' %}active{% endif %}"><span>Commodities</span></div>
+                </div>
+
+                <div class="fr">
+                    {% if request.GET.asset_type != 'options' %}
+                        <div class="btn btn-bool btn-valid-only mr10"><div>Valid only</div></div>
+                        <div class="btn btn-bool btn-invalid-only mr10"><div>Invalid only</div></div>
+                    {% endif %}
+                    <div class="btn btn-deselect-all mr10" style="background-color: var(--black-hover-hover);">Deselect all</div>
+                    <div class="btn btn-select-all mr10" style="background-color: var(--blue);">Select all</div>
+                    <div class="btn btn-load mr10 locked" style="background-color: var(--green);">
+                        <img class="cf-white" src="/static/icons/lock.png" width="20" height="20" style="margin-top: -2px">
+                    </div>
+                    <div class="btn btn-delist mr10">Delist</div>
+                    <div class="btn btn-list" style="background-color: var(--green);">List</div>
+                </div>
+            {% endif %}
+        </div>
+
+        <span class="icon-more op0" style="top: calc(100vh - 60px)">
+            <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                <path fill="none" fill-rule="evenodd" stroke="#5C7AFF55" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+            </svg>
+            <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                <path fill="none" fill-rule="evenodd" stroke="#5C7AFFa1" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+            </svg>
+            <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                <path fill="none" fill-rule="evenodd" stroke="#5C7AFF" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+            </svg>
+        </span>
+
+        <div class="title-row fr pi20 jb mt20">
+            {% if user.is_admin %}
+                <div class="fr" style="width: {% if request.GET.asset_type != 'options' %}65%{% else %}30%{% endif %}">
+                    <div style="width: {% if request.GET.asset_type != 'options' %}80%{% else %}100%{% endif %}; text-align: left; position: relative;">
+                        Symbol
+                        <input type="text" class="search-input ml20" style="padding-right: 40px;">
+                        <img class="cf-white" src="/static/icons/search.png" width="20" height="20" style="position: absolute; top: 9px; margin-left: -30px">
+                    </div>
+                    {% if request.GET.asset_type != 'options' %}
+                        <div style="width: 20%; text-align: left; padding-top: 10px">Status</div>
+                    {% endif %}
+                </div>
+                <div class="fr">
+                    {% if not asset_type_is_option %}
+                        <div style="padding-top: 10px">Volume</div>
+                        <div style="padding-top: 10px" class="ml20">Price</div>
+                        <div style="padding-top: 10px; width: 200px" class="ml20">Change</div>
+                    {% else %}
+                        <div style="padding-top: 10px" class="ml20">Price</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Type</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Strike</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Exp. Date</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Bid</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Ask</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Last</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Volume</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Open Int.</div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="fr">
+                    <div style="text-align: left; position: relative;">
+                        Symbol
+                        <input type="text" class="search-input ml20" style="padding-right: 40px;">
+                        <img class="cf-white" src="/static/icons/search.png" width="20" height="20" style="position: absolute; top: 9px; margin-left: -30px">
+                    </div>
+                </div>
+                <div class="fr">
+                    {% if not asset_type_is_option %}
+                        <div style="margin-top: 10px">Volume</div>
+                        <div style="margin-top: 10px" class="ml20">Price</div>
+                        <div style="margin-top: 10px; width: 200px" class="ml20">Change</div>
+                    {% else %}
+                        <div style="padding-top: 10px" class="ml20">Price</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Type</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Strike</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Exp. Date</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Bid</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Ask</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Last</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Volume</div>
+                        <div style="padding-top: 10px; width: 80px" class="ml20">Open Int.</div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="fc p10 h100 scroller" style="overflow: scroll">
+            {% for assets in all_assets.data %}
+                {% if assets.data %}
+                    <div id="group-{{all_assets.type}}-{{assets.type}}" class="asset-mini-list {% if forloop.counter != 1 %}op0{% endif %}">
+                        {% for asset in assets.data %}
+                            {% if not asset_type_is_option %}
+                                <a data-asset-name="{{asset.asset}}" data-precision="{{asset.precision}}" data-id="{{asset.id}}" data-status="{{asset.listed}}" data-instrument-id="{{asset.instrument_id}}" data-asset="{{asset.asset}} {{asset.desc}}" {% if user.is_admin %}onclick="admin_asset_clicked(this)"{% endif %} class="fr jb asset row pi10 {% if asset.listed %}loading{% endif %} {% if asset.is_bad_volume and not user.is_admin %}zero{% endif %}" {% if not user.is_admin %}href="/chart/{{asset.id}}_{{asset.asset}}?prev={{all_assets.type}}"{% endif %}>
+                            {% else %}
+                                <a data-asset-name="{{asset.asset}}" data-id="{{asset.id}}" data-status="{{asset.listed}}" data-asset="{{asset.asset}} {{asset.desc}}" {% if user.is_admin %}onclick="admin_asset_clicked(this)"{% endif %} class="fr jb asset row pi10" {% if not user.is_admin %}href="/chart/{{asset.id}}_{{asset.asset}}?prev={{all_assets.type}}"{% endif %}>
+                            {% endif %}
+
+                                <div class="fr" style="width: {% if request.GET.asset_type != 'options' %}65%{% else %}30%{% endif %}">
+                                    {% if user.is_admin %}
+                                        <div class="fr" style="width: 80%">
+                                            {% if not asset_type_is_option %}
+                                                <div {% if asset.bad_reason == '' and asset.listed %} data-is-good="true" data-lu-dv="{{asset.last_update_daily_volume}}" data-lu-imo="{{asset.last_update_is_market_open}}" data-lu-cp="{{asset.last_update_current_price}}" {% endif %} data-iid="{{asset.instrument_id}}" class="status dot mr10" data-imo="{% if asset.is_market_open and asset.listed %}True{% else %}False{% endif %}" style="background-color: {% if asset.is_market_open and asset.listed %}var(--green){% elif asset.bad_reason != '' %}var(--red){% else %}var(--black-hover-hover){% endif %}; margin-top: 12px">
+                                            {% else %}
+                                                <div {% if asset.listed %} data-is-good="true" {% endif %} class="status dot mr10" data-imo="{% if asset.is_market_open and asset.listed %}True{% else %}False{% endif %}" style="margin-top: auto; margin-bottom: auto; background-color: {% if asset.is_market_open and asset.listed %}var(--green){% else %}var(--black-hover-hover){% endif %}">
+                                            {% endif %}
+
+                                                {% if not asset_type_is_option %}
+                                                    <div class="fc">
+                                                        {% if asset.bad_reason == '' and asset.listed %}
+                                                            <div>{% if asset.is_market_open and asset.listed %}Market open{% else %}Market closed{% endif %}</div>
+                                                            <div style="height: 20px"></div>
+                                                            <div>Last updated:</div>
+                                                            <div>Daily volume - <span style="opacity: 0.5">{{asset.last_update_daily_volume}}</span></div>
+                                                            <div>Market state - <span style="opacity: 0.5">{{asset.last_update_is_market_open}}</span></div>
+                                                            <div>Bid / Ask price - <span style="opacity: 0.5">{{asset.last_update_current_price}}</span></div>
+                                                        {% elif asset.bad_reason != '' %}
+                                                            <div>Delisted because: <span style="color: var(--red)">{{asset.bad_reason}}</span></div>
+                                                        {% else %}
+                                                            <div>-</div>
+                                                        {% endif %}
+                                                    </div>
+                                                {% else %}
+                                                    <div class="fc">
+                                                        {% if asset.listed %}
+                                                            <div>{% if asset.is_market_open and asset.listed %}Market open{% else %}Market closed{% endif %}</div>
+                                                            <div style="height: 20px"></div>
+                                                            <div>Last updated {{asset.last_update}}</div>
+                                                        {% else %}
+                                                            <div>-</div>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="fc" style="margin-top: auto; margin-bottom: auto">
+                                                <div>{{asset.asset}}</div>
+                                                <div style="font-size: 12pt; opacity: 0.5; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{asset.desc}}</div>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if not asset_type_is_option %}
+                                            <div style="margin-top: auto; margin-bottom: auto; {% if asset.bad_reason != '' %}color: var(--red);{% endif %}margin-top: 10px; width: 20%; opacity: {% if asset.listed or asset.bad_reason != '' %}1{% else %}0.5{% endif %};">{% if asset.listed %}Tradable{% else %}Not listed{% endif %}</div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="fr">
+                                            <div class="status dot mr10" style="margin-top: auto; margin-bottom: auto; background-color: {% if asset.is_market_open %}var(--green){% else %}var(--black-hover-hover){% endif %}">
+                                                <div>{% if asset.is_market_open %}Market open{% else %}Market closed{% endif %}</div>
+                                            </div>
+                                            <div class="fc" style="margin-top: auto; margin-bottom: auto">
+                                                <div>{{asset.asset}}</div>
+                                                <div style="font-size: 12pt; opacity: 0.5; max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{asset.desc}}</div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="fr" style="margin-top: 0;">
+                                    {% if asset.listed %}
+                                        {% if not asset_type_is_option %}
+                                            <div style="margin-top: auto; margin-bottom: auto" class="volume">{{asset.daily_volume | volume_filter}}</div> 
+                                            <div style="margin-top: auto; margin-bottom: auto" class="price ml20" data-precision="{{asset.precision}}">{{asset.bid_price}}</div>
+                                            <div style="margin-top: auto; margin-bottom: auto; width: 200px; color: {{asset.price_color}}" class="change ml20">{{asset.price_change}} ({{asset.perc_change}}%)</div>
+                                        {% else %}  
+                                            <div style="margin-top: auto; margin-bottom: auto" class="price ml20" data-precision="{{asset.precision}}">{{asset.price}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.option_type}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.strike_price}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.exp_date}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.bid_price}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.ask_price}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.last_price}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.volume}}</div>
+                                            <div style="width: 80px; margin-top: auto; margin-bottom: auto" class="ml20">{{asset.oi}}</div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="nodata-found ch {% if assets_number != 0 %}op0{% endif %}" style="color: var(--text); font-size: 15pt">No data found</div>
+        </div>
+    </div>
+
+    <script>
+        function formatVolume(val) {
+            if (val / 1000000000000 > 1) {
+                return String(Math.round(val / 1000000000000 * 100) / 100) + 'T';
+            } else if (val / 1000000000 > 1) {
+                return String(Math.round(val / 1000000000 * 100) / 100) + 'B';
+            } else if (val / 1000000 > 1) {
+                return String(Math.round(val / 1000000 * 100) / 100) + 'M';
+            } else if (val / 1000 > 1) {
+                return String(Math.round(val / 1000 * 100) / 100) + 'K';
+            } else {
+                return String(Math.round(val * 100) / 100);
+            }
+        }
+
+        // Update last updated tooltip
+        function updateLastUpdated(el) {
+            if (el.length == 1) {
+                lu_dv = $(el).attr('data-lu-dv');
+                lu_imo = $(el).attr('data-lu-imo');
+                lu_cp = $(el).attr('data-lu-cp');
+                imo = $(el).attr('data-imo') === "True";
+
+                html_ = '<div>' + (imo ? 'Market open' : 'Market closed') + '</div>';
+                html_ += '<div style="height: 20px"></div>';
+                html_ += '<div>Last updated:</div>';
+                html_ += '<div>Daily volume - <span style="opacity: 0.5">' + lu_dv + '</span></div>';
+                html_ += '<div>Market state - <span style="opacity: 0.5">' + lu_imo + '</span></div>';
+                html_ += '<div>Bid / Ask price - <span style="opacity: 0.5">' + lu_cp + '</span></div>';
+
+                $(el).find('> div.fc').html(html_);
+            }   
+        }
+
+        var all_price_data = {};
+
+        asset_names = {{asset_names | safe}};
+
+        window.onload = async function() {
+            // Websocket
+            const socket_iid = new WebSocket(
+                (location.protocol === 'https:' ? 'wss' : 'ws') + '://'
+                + window.location.host
+                + '/ws/updates/list'
+            );
+
+            socket_iid.onmessage = function(e) {
+                e = JSON.parse(e['data']);
+                if (e['t'] == 'm') {
+                    all_price_data[e['d']['i']] = {
+                        'is_market_open': e['d']['mo'],
+                        'off_close': e['d']['oc'],
+                        'close': e['d']['c']
+                    }
+                    {% if user.is_admin %}
+                        // Update last updated Market state
+                        el = $('.status[data-is-good][data-iid="' + e['d']['i'] + '"]');
+                        if (el.length == 1) {
+                            $(el).attr('data-lu-imo', e['d']['lu']);
+                        }
+                        updateLastUpdated(el);
+                    {% endif %}
+                } else if (e['t'] == 'p') {
+                    aid = e['d']['i'];
+                    // Get current price
+                    cur_price = e['d']['b'];
+                    // Get isMarketOpen and Close price 
+                    aid_price_data = all_price_data[aid];
+                    // Get UI elements
+                    let el_all = $('#group-{{request.GET.asset_type}}-all > a[data-instrument-id="' + String(aid) + '"]');
+                    let el_ga = $('#group-{{request.GET.asset_type}}-gainers > a[data-instrument-id="' + String(aid) + '"]');
+                    let el_lo = $('#group-{{request.GET.asset_type}}-losers > a[data-instrument-id="' + String(aid) + '"]');
+                    // Update UI
+                    if (aid_price_data !== undefined) {
+                        close_ = aid_price_data['close'];
+                        off_close_ = aid_price_data['off_close'];
+                        is_market_open = aid_price_data['is_market_open'];
+                        // Calculate change
+                        price_change = (is_market_open ? cur_price : off_close_) - close_;
+                        perc_change = Math.round(price_change / close_ * 10000) / 100;
+                        // Round prices
+                        mrk = Math.pow(10, parseInt($(el_all).attr('data-precision')));
+                        cur_price = Math.round(cur_price * mrk) / mrk;
+                        price_change = Math.round(price_change * mrk) / mrk;
+                        // Update UI
+                        char_ = price_change >= 0 ? '+' : '';
+
+                        price_str = String(is_market_open ? cur_price : off_close_);
+                        $(el_all).find('.price').text(price_str);
+
+                        if (price_change != 0) {
+                            change_str = char_ + String(price_change) + ' (' + char_ + String(perc_change) + '%)';
+                            $(el_all).find('.change').addClass(price_change > 0 ? 'green' : 'red').text(change_str);
+
+                            if (price_change > 0) {
+                                $(el_ga).find('.price').text(price_str);
+                                $(el_ga).find('.change').addClass('green').text(change_str);
+                                {% if not user.is_admin %}
+                                    $(el_lo).addClass('zero');
+                                {% endif %}
+                                $(el_ga).removeClass('zero');
+                            } else {
+                                $(el_lo).find('.price').text(price_str);
+                                $(el_lo).find('.change').addClass('red').text(change_str);
+                                {% if not user.is_admin %}
+                                    $(el_ga).addClass('zero');
+                                {% endif %}
+                                $(el_lo).removeClass('zero');
+                            }
+                        } else {
+                            $(el_all).find('.change').text('0');
+                            $(el_ga).find('.change').text('0');
+                            $(el_lo).find('.change').text('0');
+                            {% if not user.is_admin %}
+                                $(el_ga).addClass('zero');
+                                $(el_lo).addClass('zero');
+                            {% endif %}
+                        }
+
+                        // Set status
+                        if (is_market_open) {
+                            $('a[data-instrument-id="' + String(aid) + '"] .status').css('background-color', 'var(--green)');
+                            $('a[data-instrument-id="' + String(aid) + '"] .status').attr('data-imo', 'True');
+                        } else {
+                            $('a[data-instrument-id="' + String(aid) + '"] .status').attr('data-imo', 'False');
+                            $('a[data-instrument-id="' + String(aid) + '"] .status').css('background-color', 'var(--black-hover-hover)');
+                        }
+
+                        // Remove loading animation
+                        if (el_all != undefined) {
+                            $(el_all).removeClass('loading');
+                        }
+                        if (el_lo != undefined) {
+                            $(el_lo).removeClass('loading');
+                        }
+                        if (el_ga != undefined) {
+                            $(el_ga).removeClass('loading');
+                        }
+
+                        {% if user.is_admin %}
+                            // Update last updated Current price
+                            el = $('.status[data-is-good][data-iid="' + e['d']['i'] + '"]');
+                            if (el.length == 1) {
+                                $(el).attr('data-lu-cp', e['d']['lu']);
+                            }
+                            updateLastUpdated(el);
+                        {% endif %}
+                    }
+                } else if (e['t'] == 'dv') {
+                    for (i = 0; i < asset_names.length; i++) {
+                        asset_name = asset_names[i];
+                        try {
+                            vol_ = String(formatVolume(e['d'][asset_name]));
+                            if (!(vol_ == 'NaN' || vol_.includes('e'))) {
+                                $('.asset[data-asset-name="' + asset_name + '"] .volume').text(vol_);
+                            }
+                        } catch(err) {
+                            console.log(err)
+                        }
+                    }
+
+                    {% if user.is_admin %}
+                        for (const [key, value] of Object.entries(e['lu'])) {
+                            // Update last updated Daily volume
+                            el = $('.status[data-is-good][data-iid="' + key + '"]');
+                            if (el.length == 1) {
+                                $(el).attr('data-lu-dv', value);
+                            }
+                            updateLastUpdated(el);
+                        }
+                    {% endif %}
+                }
+            };
+
+            socket_iid.onclose = function(e) {
+                console.log('Closed!')
+            };
+        }
+
+        // Symbol search
+        $('.search-input').on('input', function() {
+            val = $(this).val().toUpperCase();
+            $(this).val(val);
+            $('.asset:not(.zero)').each(function(i, el) {
+                if (!$(el).attr('data-asset').toUpperCase().includes(val)) {
+                    $(el).addClass('op0');
+                } else {
+                    $(el).removeClass('op0');
+                }
+            })
+        })
+
+        {% if user.is_admin %}
+            function admin_asset_clicked(this_) {
+                $(this_).toggleClass('selected');
+                if ($('a.asset.selected').length > 0) {
+                    $('.btn-delist').addClass('active');
+                    $('.btn-list').addClass('active');
+                } else {
+                    $('.btn-delist').removeClass('active');
+                    $('.btn-list').removeClass('active');
+                }
+            }
+
+            // Select all users
+            $('.btn-select-all').on('click', function() {
+                if ($(this).hasClass('active')) {
+                    $('a.asset:not(.op0):not(.zero)').addClass('selected');
+                    $('.btn-delist').addClass('active');
+                    $('.btn-list').addClass('active');
+                }
+            })
+
+            // Deselect all users
+            $('.btn-deselect-all').on('click', function() {
+                if ($(this).hasClass('active')) {
+                    $('a.asset:not(.op0):not(.zero)').removeClass('selected');
+                    $('.btn-delist').removeClass('active');
+                    $('.btn-list').removeClass('active');
+                }
+            })
+
+            // Only show invalid (with ungatherable daily volume) assets
+            $('.btn-invalid-only').on('click', function() {
+                if ($(this).hasClass('active')) {
+                    $(this).toggleClass('selected');
+
+                    if ($(this).hasClass('selected')) {
+                        $('.asset').each(function(i, el) {
+                            if ($(el).find('.volume').text() == '-') {
+                                $(el).removeClass('zero');
+                            } else {
+                                $(el).addClass('zero');
+                            }
+                        })
+                    } else {
+                        $('.asset').removeClass('zero');
+                    }
+                    $('.btn-valid-only').removeClass('selected');
+                }
+            })
+
+            // Only show valid (with gatherable daily volume) assets
+            $('.btn-valid-only').on('click', function() {
+                if ($(this).hasClass('active')) {
+                    $(this).toggleClass('selected');
+
+                    if ($(this).hasClass('selected')) {
+                        $('.asset').each(function(i, el) {
+                            if ($(el).find('.volume').text() == '-') {
+                                $(el).addClass('zero');
+                            } else {
+                                $(el).removeClass('zero');
+                            }
+                        })
+                    } else {
+                        $('.asset').removeClass('zero');
+                    }
+                    $('.btn-invalid-only').removeClass('selected');
+                }
+            })
+
+            // Load assets from eToro API
+            $('.btn-load').on('click', function() {
+                if ($(this).hasClass('locked')) {
+                    $(this).find('img').addClass('op0');
+                    $(this).text('Load assets').addClass('active').removeClass('locked');
+                } else {
+                    $(this).addClass('loading');
+                    $.ajax({
+                        url: '/api/assets/load_list',
+                        type: "POST",
+                        dataType: 'json',
+                        success: (data) => {
+                            window.location.reload();
+                        },
+                        error: (error) => {
+                            window.location.reload();
+                        }
+                    });
+                }
+            })
+
+            // Get IDs of selected users
+            function getSelectedIDs() {
+                arr = [];
+                $('.asset.selected').each(function(i, el) {
+                    arr.push($(el).attr('data-id'));
+                })
+                return arr;
+            }
+
+            // Send AJAX request
+            function sendRequest(action_) {
+                data_type = $('.type > div.active').attr('data-type');
+                $.ajax({
+                    url: '/api/assets/action',
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        ids: getSelectedIDs(),
+                        action: action_,
+                        is_option: '{% if asset_type_is_option %}true{% else %}false{% endif %}'
+                    },
+                    success: (data) => {
+                        window.location = '/assets?asset_type=' + data_type;
+                    },
+                    error: (error) => {
+                        window.location = '/assets?asset_type=' + data_type;
+                    }
+                });
+            }
+
+            // List
+            $('.btn-list').on('click', function() {
+                if ($(this).hasClass('active')) {
+                    sendRequest('list');
+                }
+            })
+
+            // Delist
+            $('.btn-delist').on('click', function() {
+                if ($(this).hasClass('active')) {
+                    sendRequest('delist');
+                }
+            })
+        {% endif %}
+
+        // When we scroll the list of assets
+        $('.row-ui > div:last-child').scroll(function() {
+            if($(this).scrollTop() + $(this).height() >= $(this)[0].scrollHeight - 41){
+                $('.icon-more').addClass('up');
+            } else {
+                $('.icon-more').removeClass('up');
+            }
+        })
+
+        $('.input-select > select').each(function(i, el) {
+            setupSelectWidth(el);
+        })
+        // 
+        h = 60.5 * {{assets_number}};
+        harea = $('.row-ui > div:last-child').height();
+        if (h > harea) {
+            $('.icon-more').removeClass('op0');
+        } else {
+            $('.icon-more').addClass('op0');
+        }
+        //
+        {% if user.is_admin %}
+            // Check if there are elements to activate buttons
+            if ($('.asset-mini-list:not(.op0) > a.asset').length > 0) {
+                $('.btn-select-all').addClass('active');
+                $('.btn-deselect-all').addClass('active');
+                $('.btn-valid-only').addClass('active');
+                $('.btn-invalid-only').addClass('active');
+            }
+        {% endif %}
+
+        // Type of list
+        $('.row-ui .type > div').on('click', function() {
+            {% if user.is_admin %}
+                window.location = '/assets?asset_type=' + $(this).attr('data-type');
+            {% else %}
+                $(this).parent().find('div').removeClass('active');
+                $(this).addClass('active');
+                showAssets();
+            {% endif %}
+        })
+
+        // Select with arrow clicked
+        $('.input-select > select').on('change', function() {
+            window.location = '/assets?asset_type=' + $(this).find('option:selected').attr('value');
+        })
+    </script>
+{% endblock %}

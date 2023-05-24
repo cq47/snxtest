@@ -1,0 +1,567 @@
+#chart {
+    width: 100%;
+    height: 100%;
+}
+
+/* Indicator row */
+.ind > span {
+    text-align: left;
+    width: auto;
+    padding: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    z-index: 10000!important;
+    color: var(--text);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 12pt;
+    max-width: 250px; overflow: hidden; white-space: nowrap;
+    text-overflow: ellipsis;
+    background-color: var(--elbg);
+}
+
+.ind > span > div > img {
+    transition: all 0.2s ease;
+}
+
+.ind > span > div:hover > img {
+    transform: scale(1.1);
+}
+
+.ind > span:hover {
+    background-color: #2d2532;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 3px 10px -3px;
+}
+
+.inputs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: auto;
+    height: auto;
+    background-color: var(--black-hover);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 20px;
+    transition: all 0.2s ease;
+    z-index: 10001!important;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 3px 10px -3px;
+    max-width: 800px;
+    max-height: 600px;
+    min-width: 400px;
+}
+
+.inputs .inps {
+    overflow-y: scroll;
+    display: block;
+    max-height: 300px;
+}
+
+.inputs .remove {
+    transition: all 0.2s ease;
+}
+
+.order_price {
+    transition: all 0.2s ease;
+}
+
+.order_price.op0 {
+    margin: 0;
+    padding: 0;
+    width: 0;
+    height: 0;
+    max-width: 0;
+    overflow: hidden;
+}
+
+.history-list > div.op0 {
+    display: none!important;
+}
+
+.inputs .remove.op0, .inputs .period.op0, .inputs > .inps > div.op0, #draw-edit .settings.op0 {
+    margin: 0;
+    padding: 0;
+    width: 0;
+    height: 0;
+    max-width: 0;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.inputs > div:first-child > div > .title {
+    font-size: 20pt;
+    margin-right: 20px;
+}
+
+.inputs > div:not(:first-child) > div > .title {
+    font-size: 14pt; margin-top: 7px;
+}
+
+.inputs > div > .close {
+    cursor: pointer;
+}
+
+.ind .visibility {
+    margin-top: -2px;
+    position: relative;
+    cursor: pointer;
+}
+.ind .visibility.yes > img.yes {
+    opacity: 100%;
+}
+.ind .visibility.yes > img.no {
+    opacity: 0%;
+}
+.ind .visibility > img.yes {
+    opacity: 0%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.2s ease;
+}
+.ind .visibility > img.no {
+    opacity: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all 0.2s ease;
+}
+
+/* Separator */
+.sep {
+    position: absolute; height: 20px; z-index: 2000;
+    box-shadow: rgba(0, 0, 0, 0.8) 0px -3px 10px -5px;
+    pointer-events: none;
+}
+.sep:after {
+    display: block;
+    width: calc(100% - 5px);
+    content: "";
+    height: 1px;
+    background-color: #F45B6922;
+}
+
+/* Main series tooltip */
+.ms-tooltip {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    border-radius: 10px;
+    z-index: 2000;
+    color: var(--text);
+    pointer-events: none;
+}
+.ms-tooltip > div  {
+    background-color: var(--elbg);
+    border-radius: 10px;
+    padding: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-sizing: content-box;
+    border: 1px solid var(--elbg);
+}
+
+.ms-tooltip > div > div > span, .ms-tooltip > div > span {
+    color: var(--text);
+}
+.ms-tooltip.green > div > div > span, .ms-tooltip.green > div > span {
+    color: var(--green);
+}
+.ms-tooltip.red > div > div > span, .ms-tooltip.red > div > span {
+    color: var(--red);
+}
+
+.ind-tooltip {
+    position: absolute;
+    top: 20px;
+    color: var(--text);
+    z-index: 2000;
+    width: 100%;
+    pointer-events: none;
+}
+
+.ind-tooltip > div {
+    background-color: var(--elbg);
+    border-radius: 10px;
+    padding: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    transition: all 0.2s ease;
+    opacity: 100%;
+}
+
+.ind-tooltip > div:not(:has(*)) {
+    opacity: 0;
+}
+
+#dpd-drawings:has(> div:nth-child(3) > div.active) {
+    border: 2px dotted var(--blue);
+    background-color: #5C7AFF3E;
+}
+
+
+/* Trading UI */
+#trading {
+    width: 250px!important;
+    background-color: var(--black-hover);
+    border-left: 1px solid #F45B6922;
+    overflow-y: scroll;
+    display: block;
+}
+
+/* Long / short buttons when market is open */
+#trading .btns > div {
+    padding: 5px;
+    padding-inline: 10px;
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 14pt;
+    height: 40px;
+    padding-top: 9px;
+}
+
+#trading .prices > div {
+    width: auto;
+    color: var(--text);
+    opacity: 0.75;
+    font-size: 10pt;
+}
+#trading .prices > div:first-child {
+    text-align: left;
+}
+#trading .prices > div:nth-child(2) {
+    text-align: right;
+}
+
+#trading:not(.disabled) .btns > div:hover {
+    opacity: 0.85;
+    transform: scale(1.02);
+}   
+
+#trading:not(.disabled) .btns > div.css_active {
+    opacity: 0.5;
+}
+
+#trading .btns > div.long {
+    background-color: var(--green);
+    margin-right: 5px;
+}
+
+#trading .btns > div.short {
+    background-color: var(--red);
+    margin-left: 5px;
+}
+
+/* Those buttons when market is closed */
+#trading.disabled .btns > div {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#trading select[name="order_type"] {
+    font-size: 14pt;
+}
+
+#trading input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--black);
+    outline: none;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    outline: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 10px;
+}
+#trading datalist {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+#trading datalist > option {
+    width: auto;
+    font-size: 10pt;
+    opacity: 0.75;
+}
+#trading datalist > option:last-child {
+    text-align: right;
+}
+
+#trading input[type="range"]:hover {
+    opacity: 1;
+}
+
+#trading input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--blue);
+    border-radius: 100%;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0,1) 0px 3px 10px -3px;
+}
+
+#trading input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--blue);
+    border-radius: 100%;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0,1) 0px 3px 10px -3px;
+}
+
+#trading .order_size > div:hover {
+    opacity: 0.75;
+}
+#trading .order_size > div.css_active {
+    opacity: 0.5;
+}
+
+#trading .history-list > div {
+    width: 100%;
+    background-color: var(--black);
+    border-radius: 10px;
+    padding: 10px;
+    position: relative;
+}
+#trading .history-list > div:not(:last-child) {
+    margin-bottom: 10px;
+}
+#trading .history-list > div.closed {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+#trading .history-list > div .close {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+#trading .history-list > div .close:hover {
+    transform: scale(1.1);
+}   
+/*  */
+
+
+#left-menu {
+    width: 50px;
+    height: 100%;
+    background-color: var(--black-hover);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 3px 10px -3px;
+    border-right: 1px solid #F45B6922;
+}
+
+#left-menu > div {
+    width: 40px;
+    margin-inline: 5px;
+    margin-top: 5px;
+    height: 40px;
+    position: relative;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+#left-menu > div.css_active {
+    opacity: 0.5;
+}
+
+#left-menu > div:hover:has(.tooltip:not(:hover)) {
+    background-color: var(--blue);
+}
+
+#left-menu > div > div:nth-child(1) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+#left-menu > div > div:nth-child(3) {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    overflow: hidden;
+    max-width: 0;
+    transition: all 0.2s ease;
+    z-index: 10003;
+    background-color: var(--black-hover);
+    opacity: 0;
+    border-radius: 10px;
+    border: 1px solid #F45B6922;
+}
+
+#left-menu > div.open > div:nth-child(3) {
+    opacity: 100%;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 3px 10px -3px;
+}
+
+#left-menu > div > div > .item {
+    white-space: nowrap;
+    padding: 5px; padding-inline: 10px;
+    height: 42px; transition: all 0.2s ease;
+}
+#left-menu > div > div > .item.active {
+    background-color: var(--blue);
+}
+#left-menu > div > div > .item > div:first-child {
+    margin-top: 3px; 
+    width: 25px;
+    height: 25px;
+    position: relative;
+}
+#left-menu > div > div > .item > div:nth-child(2) {
+    display: inline-block; transform: translateX(10px) translateY(7px);
+}
+#left-menu > div > div > .item.disabled * {
+    color: gray;
+}
+#left-menu > div > div > .item:not(:last-child) {
+    border-bottom: 1px solid #F45B6922;
+}
+#left-menu > div > div > .item:not(.disabled):hover {
+    background-color: var(--blue);
+}
+
+#left-menu > div > div.fc {
+    width: 0;
+    transition: all 0.2s ease;
+}
+
+#left-menu > div.open > div.fc {
+    width: auto;
+}
+
+#left-menu > div.open > div:not(.tooltip) {
+    max-width: 200px;
+}
+
+#left-menu .tooltip {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 50px;
+    opacity: 0;
+    transition: all 0.2s ease;
+    max-width: 0;
+    z-index: 10003;
+    background-color: var(--black-hover);
+    border: 1px solid #F45B6922;
+    border-radius: 10px;
+    padding: 5px;
+    padding-inline: 10px;
+    pointer-events: none;
+}
+
+#left-menu .tooltip > div {
+    width: auto;
+    max-width: 500px;
+}
+
+#left-menu > div:hover:has(.tooltip:not(:hover)) .tooltip {
+    opacity: 100%;
+    max-width: 250px;
+}
+
+#ind-ma-ribbon .inps > div:not(.op0) {
+    margin-top: 20px;
+}
+
+#left-menu > div.noopen.active {
+    border: 2px dotted var(--blue);
+    background-color: #5C7AFF3E;
+}
+
+/* UI for editing drawings */
+#draw-edit {
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    z-index: 2000;
+}
+#draw-edit:has(> div:nth-child(1).op0:not(.inputs)) {
+    pointer-events: none;
+}
+
+#draw-edit > div:not(.inputs) {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: var(--elbg);
+    border: 1px solid #F45B6922;
+}
+#draw-edit > div:not(.inputs).op0 {
+    pointer-events: none;
+}
+
+#draw-edit > div:not(.inputs) > label {
+    display: block; z-index: 2001; 
+    background-color: rgb(251, 4, 4); 
+    border: 1px solid #F45B6922; 
+    width: 30px; height: 30px;
+    border-radius: 10px;
+}
+
+label > input[type="color"] {
+    visibility: hidden;
+}
+
+#draw-edit > div:not(.inputs) > .settings {
+    border-radius: 10px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+#draw-edit > div:not(.inputs) > .settings > img {
+    margin-left: 2.5px;
+    margin-top: 2.5px;
+}
+#draw-edit > div:not(.inputs) > .settings:hover {
+    background-color: var(--blue);
+}
+
+.inputs label:has(> input[type="color"]) { 
+    width: 40px; height: 40px; 
+    border-radius: 10px;
+}
+
+/* Exit link button */
+.btn-exit {
+    cursor: pointer;
+    position: absolute;
+    bottom: 10px;
+    transition: all 0.2s ease;
+    left: 13px;
+    transform: rotate(-90deg);
+}
+.btn-exit:hover {
+    transform: scale(1.1) rotate(-90deg);
+}
+
+/* Timeframe select */
+.input-select > select {
+    background-color: transparent;
+    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-size: 20pt;
+    pointer-events: all;
+    width: auto;
+    height: 26px;
+    margin-top: 1px;
+    padding-inline: 0;
+    color: var(--blue);
+    padding-right: 2px;
+}

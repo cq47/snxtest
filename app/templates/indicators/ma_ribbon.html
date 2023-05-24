@@ -1,0 +1,75 @@
+{% load static %}
+<!-- MA Ribbon -->
+<div id="ind-ma-ribbon" class="ind">
+    <span onclick="indRowOnClick(event, this)" style="top: 138px">
+        <span vis-color="#5C7AFF" style="color: #5C7AFF">MA Ribbon</span>
+        <div style="display: inline-block; width: 10px; height: 10px; position: relative">
+            <img series-list-name="ribbon_ma" class="close cf-gray" src="/static/icons/cross.png" width="16" height="16" style="position: absolute; top: -2.5px; left: -2px">
+        </div>
+        <div class="visibility yes" onclick="visibilityOnClick(this, ribbon_ma)" style="display: inline-block; width: 10px; height: 10px; position: relative; margin-left: 7px">
+            <img class="cf-gray no visimg" src="/static/icons/eyec.png" width="20" height="20" style="top: -4.5px; left: -5px">
+            <img class="cf-gray yes visimg" src="/static/icons/eye.png" width="20" height="20" style="top: -4.5px; left: -5px">
+        </div>
+    </span>
+    <div class="inputs op0">
+        <div class="fr jb mb20" style="position: relative">
+            <div class="fr">
+                <div class="title">MA Ribbon</div>
+            </div>
+            <img onclick="indSettingsCloseOnClicked(this)" class="close cf-red" src="{% static 'icons/cross.png' %}" width="25" height="25">
+            <div style="position: absolute; border-bottom: 1px solid gray; bottom: -20px; left: -20px; width: calc(100% + 40px)"></div>
+        </div>
+
+        <div class="fc inps">
+            <div class="fr jb period">
+                <div class="title" style="margin-top: 9px; white-space: nowrap">MA №1</div>
+                <div class="fr ml20">
+                    <select name="type" class="mr20">
+                        <option value="sma">SMA</option>
+                        <option selected="selected" value="ema">EMA</option>
+                    </select>
+                    <select name="source" class="mr20">
+                        <option value="open">Open</option>
+                        <option value="high">High</option>
+                        <option value="low">Low</option>
+                        <option selected value="close">Close</option>
+                    </select>
+                    <input type="number" value="5">
+                    <div class="remove ml20">
+                        <img onclick="st_MA_Ribbon_remove_row(this)" class="cf-red" src="/static/icons/cross.png" width="20" height="20" style="cursor: pointer; margin-top: 9px">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fr jb period">
+                <div class="title" style="margin-top: 9px; white-space: nowrap">MA №2</div>
+                <div class="fr ml20">
+                    <select name="type" class="mr20">
+                        <option selected="selected" value="sma">SMA</option>
+                        <option value="ema">EMA</option>
+                    </select>
+                    <select name="source" class="mr20">
+                        <option value="open">Open</option>
+                        <option value="high">High</option>
+                        <option value="low">Low</option>
+                        <option selected value="close">Close</option>
+                    </select>
+                    <input type="number" value="10">
+                    <div class="remove ml20">
+                        <img onclick="st_MA_Ribbon_remove_row(this)" class="cf-red" src="/static/icons/cross.png" width="20" height="20" style="cursor: pointer; margin-top: 9px">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr jb mt40" style="position: relative;">
+            <div style="position: absolute; border-top: 1px solid gray; top: -20px; left: -20px; width: calc(100% + 40px)"></div>
+            <div onclick="st_MA_Ribbon_add(this)" class="fr onh-blue btn-add-ma-ribbon-row" style="padding-inline: 10px; background-color: var(--black); border-radius: 10px; padding-left: 12px; cursor: pointer;">
+                <div style="font-size: 14pt; margin-top: 9px; color: var(--text)" class="mr10">New MA</div>
+                <img class="add cf-white" src="/static/icons/plus.png" width="23" height="23" style="margin-top: 8px">
+            </div>
+            <button onclick="st_MA_Ribbon_save(this, chart, ribbon_ma)" type="button">Save</button>
+        </div>
+        <div class="last-inps" style="display: none; visibility: hidden;"></div>
+    </div>
+</div>

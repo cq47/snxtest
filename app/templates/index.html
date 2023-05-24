@@ -1,0 +1,159 @@
+{% load socialaccount %}
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papertrading</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <script src="{% static 'js/jquery.js' %}"></script>
+
+    {% block imports %}{% endblock %}
+  </head>
+
+  <style>
+    html, body {
+        overflow: hidden;
+    }
+
+    .main-block {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        z-index: 110;
+    }
+
+    .main-block > div > div:first-child {
+        color: var(--text);
+        font-size: 75pt;
+        text-align: left;
+        margin-left: -5px;
+        font-weight: bold;
+    }
+    .main-block > div > div:not(:first-child) {
+        color: var(--text);
+        font-size: 37pt;
+        text-align: left;
+    }
+    .main-block > div > div:last-child {
+        margin-top: 7px;
+    }
+
+    .circle {
+        position: absolute;
+        border-radius: 100%;
+        box-shadow: rgba(39, 39, 87, 0.3) 0px 10px 21px -3px, rgba(0, 0, 0, 0.8) 0px 8px 16px -8px, rgba(50, 50, 93, 0.3) 0px 60px 120px -24px inset, rgba(0, 0, 0, 0.6) 0px 36px 72px -36px inset, rgba(50, 50, 93, 0.6) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.8) 0px 18px 36px -18px inset;
+    }
+
+    a {
+        position: absolute;
+        bottom: -5px;
+        right: 0;
+        font-size: 26pt;
+        text-decoration: none;
+        border-top-left-radius: 0;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 10px;
+        padding: 10px;
+        padding-left: 30px;
+        height: 60px;
+        width: 230px;
+        text-align: center;
+        cursor: pointer;
+    }
+    a:before,
+    a:after {
+        position: absolute;
+        content: '';
+        top: 0px;
+        height: 100%;
+        width: 55%;
+        background: var(--black);
+        border-left-width: 3px;
+        z-index: -1;
+        transition: all 0.2s ease;
+    }
+    a:before {
+        left: 0px;
+        border-radius: 20px;
+        border-right: none;
+        transform: skew(20deg);
+        transform-origin: top left;
+    }
+    a:after {
+        right: 0px;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        border-left: none;
+    }
+    a:hover::before, a:hover::after {
+        background-color: var(--blue);
+    }
+  </style>
+
+  <body>
+    <div class="w100 h100">
+        <div class="main-block fr">
+            <div class="fc">
+                <div>Trading</div>
+                <div>Without <span style="color: var(--black)">losing</span></div>
+                <div>money</div>
+            </div>
+            <form action="/accounts/google/login/" method="post">
+                {% csrf_token %}
+                <a onclick="$(this).parent().submit()" type="submit">Start</a>
+            </form>
+        </div> 
+        <div class="circle c1" style="background-color: var(--black-hover); z-index: 101;"></div>
+        <div class="circle c2" style="background-color: var(--red); z-index: 100;"></div>
+        <div class="circle c3" style="background-color: var(--black-hover); z-index: 101"></div>
+        <div class="circle c4" style="background-color: transparent; z-index: 100; border: 5px dotted var(--text); opacity: 0.1; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);"></div>
+        <div class="circle c5" style="background-color: transparent; z-index: 100; border: 5px dotted var(--text); opacity: 0.1; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);"></div>
+    </div> 
+
+    <script>
+        function circles() {
+            w = $(window).width();
+            h = $(window).height();
+
+            v1 = Math.round(Math.min(w, h) * 0.4);
+            b1 = String(Math.round(-v1 * 0.35)) + 'px';
+            l1 = String(Math.round(-v1 * 0.35)) + 'px';
+            $('.c1').css('width', String(v1) + 'px').css('height', String(v1) + 'px').css('bottom', b1).css('left', l1);
+
+            v2 = Math.round(Math.min(w, h) * 0.67);
+            b2 = String(Math.round(h * 0.2)) + 'px';
+            l2 = String(Math.round(w * 0.37)) + 'px';
+            $('.c2').css('width', String(v2) + 'px').css('height', String(v2) + 'px').css('bottom', b2).css('left', l2);
+
+            v2 = Math.round(Math.min(w, h) * 0.25);
+            b2 = String(Math.round(h * 0.28)) + 'px';
+            l2 = String(Math.round(w * 0.70)) + 'px';
+            $('.c3').css('width', String(v2) + 'px').css('height', String(v2) + 'px').css('bottom', b2).css('left', l2);
+
+            v2 = Math.round(w * 0.95);
+            b2 = String(Math.round(h * -0.4)) + 'px';
+            l2 = String(Math.round(w * 0.02)) + 'px';
+            $('.c4').css('width', String(v2) + 'px').css('height', String(v2) + 'px');
+
+            v2 = Math.round(w * 0.56);
+            b2 = String(Math.round(h * -0.4)) + 'px';
+            l2 = String(Math.round(w * 0.02)) + 'px';
+            $('.c5').css('width', String(v2) + 'px').css('height', String(v2) + 'px');
+        }
+
+        $(window).on('load', function() {
+            circles();
+        })
+
+        $(window).resize(function() {
+            circles();
+        })
+    </script>
+  </body>
+</html>

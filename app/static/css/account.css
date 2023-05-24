@@ -1,0 +1,78 @@
+.account .item > div:first-child {
+    font-size: 14pt;
+}
+
+.account .item > div:last-child > div:first-child {
+    font-size: 32pt;
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: -2px;
+}
+
+.account .item > div:last-child > div:nth-child(2) {
+    font-size: 20pt;
+    margin-top: 18px;
+    margin-left: 10px;
+}
+
+.account .item > div > div.green {
+    color: var(--green);
+}
+
+.account .item > div > div.red {
+    color: var(--red);
+}
+
+.account .item > div > div {
+    color: var(--text);
+}
+
+.type > div.op0 {
+    display: none;
+}
+
+.row-ui .asset > div:first-child > div:last-child {
+    font-size: 14pt;
+    color: var(--text);
+    opacity: 0.5;
+}
+
+.row-ui .asset > div:last-child {
+    color: var(--text);
+}
+
+.icon-close {
+    position: relative; width: 20px!important;
+    transition: all 0.2s ease;
+}
+
+.icon-close:hover {
+    opacity: 0.75;
+}
+
+.icon-close > img {
+    transition: all 0.2s ease;
+}
+
+.icon-close:hover > img {
+    transform: scale(1.1);
+}
+
+.title-row.op0 {
+    display: none;
+}
+
+.asset .green {
+    color: var(--green);
+}
+
+.asset .red {
+    color: var(--red);
+}
+
+/* Closed positions / orders */
+.order.closed, .position.closed {
+    opacity: 0.5;
+    pointer-events: none;
+}

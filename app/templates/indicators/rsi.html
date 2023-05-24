@@ -1,0 +1,47 @@
+{% load static %}
+<!-- RSI -->
+<div id="ind-rsi" class="ind">
+    <div class="sep" style="top: 78%"></div>
+    <span onclick="indRowOnClick(event, this)" style="top: 80%">
+        <span vis-color="#5C7AFF" style="color: #5C7AFF">RSI</span>
+        <div style="display: inline-block; width: 10px; height: 10px; position: relative">
+            <img series-list-name="rsi" class="close cf-gray" src="/static/icons/cross.png" width="16" height="16" style="position: absolute; top: -2.5px; left: -2px">
+        </div>
+        <div class="visibility yes" onclick="visibilityOnClick(this, rsi)" style="display: inline-block; width: 10px; height: 10px; position: relative; margin-left: 7px">
+            <img class="cf-gray no visimg" src="/static/icons/eyec.png" width="20" height="20" style="top: -4.5px; left: -5px">
+            <img class="cf-gray yes visimg" src="/static/icons/eye.png" width="20" height="20" style="top: -4.5px; left: -5px">
+        </div>
+    </span>
+    <div class="inputs op0">
+        <div class="fr jb mb40" style="position: relative">
+            <div class="fr">
+                <div class="title">RSI</div>
+            </div>
+            <img onclick="indSettingsCloseOnClicked(this)" class="close cf-red" src="{% static 'icons/cross.png' %}" width="25" height="25">
+            <div style="position: absolute; border-bottom: 1px solid gray; bottom: -20px; left: -20px; width: calc(100% + 40px)"></div>
+        </div>
+
+        <div class="fc inps">
+            <div class="fr jb">
+                <div class="title" style="margin-top: 9px; white-space: nowrap">Source</div>
+                <select name="source">
+                    <option value="open">Open</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                    <option selected value="close">Close</option>
+                </select>
+            </div>  
+
+            <div class="fr jb mt20">
+                <div class="title" style="margin-top: 9px; white-space: nowrap">Period</div>
+                <input type="number" value="14">
+            </div>
+        </div>
+
+        <div class="fr je mt40" style="position: relative;">
+            <div style="position: absolute; border-top: 1px solid gray; top: -20px; left: -20px; width: calc(100% + 40px)"></div>
+            <button onclick="st_RSI_save(this, chart, rsi)" type="button">Save</button>
+        </div>
+        <div class="last-inps" style="display: none; visibility: hidden;"></div>
+    </div>
+</div>

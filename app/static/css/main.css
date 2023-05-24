@@ -1,0 +1,273 @@
+:root {
+    --black: #201A23;
+    --black-hover: #2d2532;
+    --black-hover-hover: #3a2f40;
+    --red: #F45B69;
+    --green: #45CB85;
+    --blue: #5C7AFF;
+    --text: #e7dfdf;
+    --orange: #F6AA28;
+    --elbg: #2d2532be;
+    --border: #F45B6922;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--black);
+}
+
+.cf-red {
+    filter: invert(52%) sepia(91%) saturate(2093%) hue-rotate(318deg) brightness(95%) contrast(101%);
+}
+
+.cf-blue {
+    filter: invert(43%) sepia(44%) saturate(1524%) hue-rotate(204deg) brightness(101%) contrast(101%);
+}
+
+.onh-blue {
+    transition: all 0.2s ease;
+}
+.onh-blue:hover {
+    background-color: var(--blue)!important;
+}
+
+.cf-white {
+    filter: invert(100%) sepia(0%) saturate(3808%) hue-rotate(358deg) brightness(113%) contrast(88%);
+}
+
+.cf-black {
+    filter: invert(5%) sepia(3%) saturate(6908%) hue-rotate(236deg) brightness(105%) contrast(88%);
+}
+
+.cf-gray {
+    filter: invert(51%) sepia(18%) saturate(0%) hue-rotate(208deg) brightness(94%) contrast(90%);
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -khtml-user-select: none;
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none; 
+    color: var(--text);
+    box-sizing: border-box;
+}
+
+.ch {
+    margin-inline: auto;
+}
+
+.fc {
+    display: flex;
+    flex-direction: column;
+}
+
+.fr {
+    display: flex;
+    flex-direction: row;
+}
+
+.js {
+    justify-content: start;
+}
+
+.jb {
+    justify-content: space-between;
+}
+
+.je {
+    justify-content: end;
+}
+
+.op0 {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mb10 {
+    margin-bottom: 10px;
+}
+
+.mt10 {
+    margin-top: 10px;
+}
+
+.ml10 {
+    margin-left: 10px;
+}
+
+.mr10 {
+    margin-right: 10px;
+}
+
+.mb20 {
+    margin-bottom: 20px;
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+.ml20 {
+    margin-left: 20px;
+}
+
+.mr20 {
+    margin-right: 20px;
+}
+
+.mb40 {
+    margin-bottom: 40px;
+}
+
+.mt40 {
+    margin-top: 40px;
+}
+
+.ml40 {
+    margin-left: 40px;
+}
+
+.mr40 {
+    margin-right: 40px;
+}
+
+.mr50 {
+    margin-right: 50px;
+}
+
+.p10 {
+    padding: 10px;
+}
+
+.p20 {
+    padding: 20px;
+}
+
+.pl10 {
+    padding-left: 10px;
+}
+
+.pi10 {
+    padding-inline: 10px;
+}
+
+.pi20 {
+    padding-inline: 20px;
+}
+
+.pi50 {
+    padding-inline: 50px;
+}
+
+.pb0 {
+    padding-bottom: 0;
+}
+
+.w100 {
+    width: 100%;
+}
+
+.h100 {
+    height: 100%;
+}
+
+select, input, button {
+    width: 150px; height: 40px; 
+    border-radius: 10px; 
+    background-color: var(--black); 
+    padding-inline: 10px; 
+    outline: none; 
+    font-size: 14pt;
+    border: 2px solid var(--black); 
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+select.small {
+    width: 120px; height: 30px;
+}
+input.small {
+    width: 75px; height: 30px;
+}
+button.small {
+    width: 75px; height: 30px;
+}
+select:focus, input:focus {
+    border: 2px solid var(--blue); 
+}
+
+input {
+    padding-inline: 13px; 
+}
+input[type="number"] {
+    width: 100px;
+}
+
+button {
+    width: auto;
+    min-width: 100px;
+    height: 40px;
+    border: none;
+}
+
+button:hover {
+    background-color: var(--blue);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 3px 10px -3px;
+}
+
+.dot {
+    width: 16px; height: 16px; 
+    border-radius: 100%; background-color: var(--text); 
+    margin-top: 7px;
+    cursor: pointer;
+    pointer-events: all;
+    z-index: 10002;
+}
+.dot > div {
+    transition: all 0.2s ease;
+    padding: 5px;
+    padding-inline: 10px;
+    border: 1px solid #F45B6922;
+    background-color: var(--black-hover);
+    border-radius: 10px;
+    z-index: 10002;
+    display: inline-block;
+    opacity: 0;
+    margin-left: 20px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.dot:hover > div {
+    opacity: 1;
+}
+
+/* Messages */
+.msg, .msg_err {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 500px;
+    height: auto;
+    max-height: 300px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    z-index: 100005;
+    cursor: pointer;
+}
+
+.msg {
+    background-color: var(--green);
+}
+
+.msg_err {
+    background-color: var(--red);
+}

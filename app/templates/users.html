@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load maintags %}
+
+{% block title %}
+    Account
+{% endblock %}
+
+{% block imports %}
+    <script src="{% static 'js/row_ui_utils.js' %}"></script>   
+    <link rel="stylesheet" type="text/css" href="{% static 'css/assets_list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/account.css' %}">
+    <style>
+        .title-row > div {
+            font-size: 14pt;
+            text-align: right;
+            color: var(--text);
+            font-weight: bold;
+        }
+
+        .asset .green * {
+            color: var(--green);
+        }
+        .asset .red * {
+            color: var(--red);
+        }
+
+        .btn-row {
+            transition: all 0.2s ease;
+            max-width: 100%;
+        }
+
+        .btn-row > div, div.selection-mode {
+            width: auto;
+            padding: 5px;
+            padding-inline: 10px;
+            border-radius: 10px;
+            background-color: var(--red);
+            color: var(--text);
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.2s ease;
+            height: 28.5px;
+        }
+
+        .btn-row.active > div, .btn-row > div.active {
+            opacity: 1;
+        }
+
+        .btn-row.active > div:hover, .btn-row > div.active:hover {
+            transform: scale(1.02);
+        }
+
+        .selection-mode {
+            transition: all 0.2s ease;
+        }
+
+        div.selection-mode {
+            opacity: 0.5;
+        }
+
+        div.selection-mode.active {
+            opacity: 1;
+        }
+
+        div.selection-mode.active:hover {
+            transform: scale(1.02);
+        }
+
+        img.selection-mode:hover {
+            transform: scale(1.1);
+        }
+        
+        .w0 {
+            max-width: 0;
+            overflow: hidden;
+        }
+
+        .row-ui > div:first-child .op0 {
+            pointer-events: none;
+            display: none;
+        }
+
+        a.selected {
+            background-color: #5C7AFF5b;
+        }
+        a.selected:hover {
+            background-color: #5C7AFFb5!important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row-ui account fc ch p20 mt10" style="height: calc(100vh - 163px)">
+        <div class="fr je">
+            <div class="fr je">
+                <div class="fr btn-row w0">
+                    <div class="btn-deselect-all active mr10" style="background-color: var(--black-hover-hover)">Deselect all</div>
+                    <div class="btn-select-all active mr10" style="background-color: var(--blue)">Select all</div>
+                    <div class="btn-deactivate mr10" style="background-color: var(--black-hover-hover)">Deactivate</div>
+                    <div class="btn-activate mr10" style="background-color: var(--green)">Activate</div>
+                    <div class="btn-delete">Delete</div>
+                </div>
+                <div class="fr">
+                    <div class="selection-mode {% if users %}active{% endif %}" style="background-color: var(--blue)">
+                        Select
+                    </div>
+                    <img class="selection-mode cf-red op0 ml10" style="margin-top: 4px; cursor: pointer;" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -2.5px; right: 0">
+                </div>
+            </div>
+        </div>
+
+        <span class="icon-more op0" style="top: calc(100vh - 63px)">
+            <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                <path fill="none" fill-rule="evenodd" stroke="#5C7AFF55" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+            </svg>
+            <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                <path fill="none" fill-rule="evenodd" stroke="#5C7AFFa1" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+            </svg>
+            <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                <path fill="none" fill-rule="evenodd" stroke="#5C7AFF" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+            </svg>
+        </span>
+
+        <div class="title-row fr pi20 jb mt20">
+            <div style="width: 300px; text-align: left; margin-top: 21px">Email / Name</div>
+            <div style="width: 50px; text-align: left; margin-top: 21px">Status</div>
+            <div style="width: 140px; text-align: right;">Account created</div>
+            <div style="width: 140px; text-align: right; margin-top: 21px;">Last visit</div>
+            <div style="width: 200px; margin-top: 21px">Balance / PnL</div>
+        </div>
+
+        <div class="fc p10 h100 scroller" style="overflow: scroll">
+            {% for i in users %}
+                <a style="cursor: pointer" class="fr jb asset pi10 row" data-href="/users/{{i.id}}" data-id="{{i.id}}" href="/users/{{i.id}}">
+                    <div style="font-size: 14pt; width: 300px; text-align: left;">
+                        <div>{{i.email}}</div>
+                        <div>{{i.first_name}} {{i.last_name}}</div>
+                    </div>
+                    <div style="font-size: 14pt; text-align: left; width: 50px; color: var(--text); {% if not i.is_active %}opacity: 0.5{% endif %}">{% if i.is_active %}Active{% else %}Inactive{% endif %}</div>
+                    <div class="fc" style="width: 140px; text-align: right; margin-top: 0;">
+                        <div style="font-size: 14pt">{{i.date_joined | dtformat_date}}</div>
+                        <div style="font-size: 14pt; opacity: 0.5">{{i.date_joined | dtformat_time}}</div>
+                    </div>
+                    <div class="fc" style="width: 140px; text-align: right; margin-top: 0;">
+                        <div style="font-size: 14pt">{{i.last_login | dtformat_date}}</div>
+                        <div style="font-size: 14pt; opacity: 0.5;">{{i.last_login | dtformat_time}}</div>
+                    </div>
+                    <div class="fc" style="width: 200px; font-size: 14pt; text-align: right; margin-top: 0">
+                        <div style="width: 200px; text-align: right">{{i.balance | balance_filter}}$</div>
+                        <div style="width: 200px; text-align: right; white-space: nowrap" class="{{i.pnl | price_perc_class}}">{{i.pnl | price_char}}{{i.pnl | balance_filter}}$ ({{i.pnl_perc}}%)</div>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="nodata-found ch" style="color: var(--text); font-size: 15pt">No data found</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        $(window).on('load', function() {
+            // Show / hide the "more" arrow
+            h = 0;
+            $('.row-ui > div > .row').each(function(i, el) {
+                h += $(el).height();
+            });
+            harea = $('.row-ui > div:last-child').height();
+            if (h > harea) {
+                $('.icon-more').removeClass('op0');
+            } else {
+                $('.icon-more').addClass('op0');
+            }
+        })
+
+        // Select all users
+        $('.btn-select-all').on('click', function() {
+            $('a.asset').addClass('selected');
+            $('.btn-row').addClass('active');
+        })
+
+        // Deselect all users
+        $('.btn-deselect-all').on('click', function() {
+            $('a.asset').removeClass('selected');
+            $('.btn-row').removeClass('active');
+        })
+
+        // Get IDs of selected users
+        function getSelectedIDs() {
+            arr = [];
+            $('.asset.selected').each(function(i, el) {
+                arr.push($(el).attr('data-id'));
+            })
+            return arr;
+        }
+
+        // Send AJAX request to API
+        function sendRequest(action_, ids_, this_) {
+            $(this_).addClass('loading');
+            $.ajax({
+                url: 'api/users/action',
+                type: "POST",
+                dataType: 'json',
+                data: {
+                    'ids': ids_,
+                    'action': action_
+                },
+                success: (data) => {
+                    window.location.reload();
+                },
+                error: (error) => {
+                    window.location.reload();
+                }
+            });
+        }
+
+        // When clicked on deactivate button
+        $('.btn-deactivate').on('click', function() {
+            if ($(this).parent().hasClass('active')) {
+                ids = getSelectedIDs();
+                sendRequest('deactivate', ids, this);
+            }
+        })
+
+        // When clicked on activate button
+        $('.btn-activate').on('click', function() {
+            if ($(this).parent().hasClass('active')) {
+                ids = getSelectedIDs();
+                sendRequest('activate', ids, this);
+            }
+        })
+
+        // When clicked on delete button
+        $('.btn-delete').on('click', function() {
+            if ($(this).parent().hasClass('active')) {
+                ids = getSelectedIDs();
+                sendRequest('delete', ids, this);
+            }
+        })
+
+        $('.selection-mode').on('click', function() {
+            if ($('div.selection-mode').hasClass('op0')) {
+                $('div.selection-mode').removeClass('op0');
+                $('img.selection-mode').addClass('op0');
+                $('.btn-row').addClass('w0');
+                $('a.asset').each(function(i, el) {
+                    $(el).attr('href', $(el).attr('data-href'));
+                    $(el).off('click');
+                })
+            } else {
+                if ($(this).hasClass('active')) {
+                    $('div.selection-mode').addClass('op0');
+                    $('img.selection-mode').removeClass('op0');
+                    $('.btn-row').removeClass('w0');
+                    $('a.asset').removeAttr('href');
+                    $('a.asset').each(function(i, el) {
+                        $(el).on('click', function() {
+                            admin_asset_clicked(this);
+                        })
+                    });
+                }
+            }
+            $('.btn-row').removeClass('active');
+            $('a.asset').removeClass('selected');
+        })
+
+        function admin_asset_clicked(this_) {
+            if ($('div.selection-mode').hasClass('op0')) {
+                $(this_).toggleClass('selected');
+                if ($('a.asset.selected').length > 0) {
+                    $('.btn-row').addClass('active');
+                } else {
+                    $('.btn-row').removeClass('active');
+                }
+            }
+        }
+
+        // When we scroll the list of users
+        $('.row-ui > div:last-child').scroll(function() {
+            if($(this).scrollTop() + $(this).height() >= $(this)[0].scrollHeight - 41) {
+                $('.icon-more').addClass('up');
+            } else {
+                $('.icon-more').removeClass('up');
+            }
+        })
+    </script>
+{% endblock %}

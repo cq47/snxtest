@@ -1,0 +1,200 @@
+.row-ui > div:last-child {
+    overflow: scroll;
+}
+
+.row-ui .type > div > span {
+    color: var(--text);
+    padding: 5px;
+    padding-inline: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 5px;
+    display: block;
+}
+
+.row-ui .type > div.active > span {
+    background-color: var(--blue);
+}
+
+.row-ui .type > div:not(.active) > span:hover {
+    background-color: var(--black-hover);
+}
+
+/* Select */
+.input-select {
+    position: relative;
+}
+
+.input-select > select {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: auto;
+    text-align: left;
+    font-size: 15pt;
+    color: var(--blue);
+    transition: all 0.2s ease;
+}
+
+.input-select > span {
+    position: absolute;
+    top: 13px;
+    right: 10px;
+    pointer-events: none;
+}
+
+/* Asset row */
+.row-ui .asset {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.row-ui .asset:first-child {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.row-ui .asset:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.row-ui .asset:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+}
+
+.row-ui .asset:hover {
+    background-color: var(--elbg);
+}
+
+.row-ui .asset > div:not(:first-child) {
+    margin-top: 10px;
+}
+
+.row-ui .asset > div:first-child > div:first-child {
+    font-size: 14pt;
+    color: var(--text);
+}
+
+.row-ui .asset > div:last-child {
+    color: var(--text);
+}
+
+.row-ui .asset > div:last-child > div {
+    width: 100px;
+    text-align: right;
+}
+
+.row-ui .asset > div:last-child > div:last-child.green {
+    color: var(--green);
+}
+
+.row-ui .asset > div:last-child > div:last-child.red {
+    color: var(--red);
+}
+
+.row-ui .asset-mini-list.op0 {
+    margin: 0;
+    max-height: 0;
+}
+
+.row-ui .asset-mini-list.op0 * {
+    margin: 0;
+    max-height: 0;
+    padding: 0;
+    display: none;
+}
+
+.nodata-found {
+    margin-top: 230px;
+}
+
+.nodata-found.op0 {
+    opacity: 0;
+    max-height: 0;
+    margin: 0;
+    display: none;
+}
+
+.icon-more {
+    position: absolute; top: calc(100vh - 80px); 
+    left: 50%; transform: translateX(-50%);
+    transition: all 0.2s ease;
+}
+.icon-more.up {
+    top: calc(100vh - 90px)
+}
+.icon-more > svg:nth-child(1) {
+    transform: rotate(90deg) translateX(-10px) scale(2);
+    transition: all 0.2s ease;
+}
+.icon-more > svg:nth-child(2) {
+    transform: rotate(90deg) translateX(-5px) scale(2);
+    transition: all 0.2s ease;
+}
+.icon-more > svg:nth-child(3) {
+    transform: rotate(90deg) scale(2);
+    transition: all 0.2s ease;
+}
+.icon-more.up > svg:nth-child(1) {
+    transform: rotate(-90deg) translateX(-10px) scale(2);
+}
+.icon-more.up > svg:nth-child(2) {
+    transform: rotate(-90deg) translateX(-5px) scale(2);
+}
+.icon-more.up > svg:nth-child(3) {
+    transform: rotate(-90deg) scale(2);
+}
+
+.title-row > div > div {
+    font-size: 14pt;
+    text-align: right;
+    color: var(--text);
+    /* opacity: 0.5; */
+    font-weight: bold;
+}
+
+.title-row > div:last-child > div {
+    width: 100px;
+}
+
+/* Loading animation */
+@keyframes anim-loading {
+    0% {background-color: transparent;}
+    50% {background-color: #5c7aff2d;}
+    100% {background-color: transparent;}
+}
+
+.asset.loading:nth-child(-n+100):nth-child(2n) {
+    animation: anim-loading 1s infinite;;
+}
+
+.asset.zero {
+    display: none;
+}
+
+/* Button valid only assets */
+.btn.btn-bool {
+    background-color: transparent!important;
+    border: 2px dashed var(--text);
+    opacity: 0.5!important;
+    transition: all 0.2s ease;
+}
+
+.btn.btn-bool > div {
+    margin-top: -2px;
+    transition: all 0.2s ease;
+}
+
+.btn.btn-bool.selected {
+    border: 2px dashed var(--blue)!important;
+    opacity: 1!important;
+}
+
+.btn.btn-bool.selected > div {
+    color: var(--blue)!important;
+}

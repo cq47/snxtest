@@ -1,0 +1,43 @@
+.top-menu {
+    padding: 10px;
+    padding-inline: 50px;
+    background-color: var(--black-hover);
+    border-bottom: 1px solid var(--border);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 3px 10px -3px;
+}
+
+.top-menu a {
+    color: var(--text);
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 16pt;
+    text-decoration: none;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.top-menu a:hover {
+    opacity: 1;
+    color: var(--text);
+}
+.top-menu a.red:hover {
+    opacity: 1;
+    color: var(--red);
+}
+
+.top-menu a.active {
+    color: var(--blue);
+    opacity: 1;
+}
+
+.top-menu > div > div > img:first-child {
+    border-radius: 100%;
+}
+
+.top-menu > div > div:has(img) > div {
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: 16pt;
+    font-weight: bold;
+}

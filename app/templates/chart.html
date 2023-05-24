@@ -1,0 +1,2517 @@
+{% load static %}
+{% load maintags %}
+
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Chart</title>
+
+        <script src="{% static 'js/tv_ws.js' %}"></script> 
+        <script src="{% static 'js/tvcl.js' %}"></script> 
+        <script src="{% static 'js/jquery.js' %}"></script>
+        <script src="{% static 'js/ta/utils.js' %}"></script>
+        <script src="{% static 'js/ta/ma-ribbon.js' %}"></script>
+        <script src="{% static 'js/ta/rsi.js' %}"></script>
+        <script src="{% static 'js/ta/macd.js' %}"></script>
+        <script src="{% static 'js/ta/vol.js' %}"></script>
+        <script src="{% static 'js/ta/vrvp.js' %}"></script>
+        <script src="{% static 'js/chart_utils.js' %}"></script>
+
+        <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/chart.css' %}">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+
+    <body>
+        <div class="fr w100 h100">
+            <div id="left-menu" class="fc js">
+                <div id="btn-save" class="ot noopen noactive">
+                    <div class="ot" style="margin-top: 2.5px">
+                        <img class="cf-white" src="/static/icons/upload.png" width="25" height="25">
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Save</div>
+                    </div>
+                </div>
+
+                <div id="btn-cursor" class="ot noopen active" draw_mode="cursor">
+                    <div class="ot" style="width: 25px; height: 25px">
+                        <div>
+                            <img style="position: absolute" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                            <img style="position: absolute; transform: rotate(90deg)" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                        </div>
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Cursor</div>
+                    </div>
+                </div>
+
+                <div id="dpd-indicators" class="ot">
+                    <div class="ot">
+                        <img class="cf-white" src="/static/icons/indicators.png" width="25" height="25">
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Indicators</div>
+                    </div>
+
+                    <div class="fc">
+                        <div class="item {% if chart.settings.indicators.ma_ribbon.on %} disabled {% endif %}" ind="ma-ribbon"><span style="transform: translateY(7px); display: inline-block">MA Ribbon</span></div>
+                        <div class="item {% if chart.settings.indicators.vol.on %} disabled {% endif %}" ind="vol"><span style="transform: translateY(7px); display: inline-block">Volume</span></div>
+                        <div class="item {% if chart.settings.indicators.macd.on %} disabled {% endif %}" ind="macd"><span style="transform: translateY(7px); display: inline-block">MACD</span></div>
+                        <div class="item {% if chart.settings.indicators.rsi.on %} disabled {% endif %}" ind="rsi"><span style="transform: translateY(7px); display: inline-block">RSI</span></div>
+                        <div class="item {% if chart.settings.indicators.vrvp.on %} disabled {% endif %}" ind="vrvp"><span style="transform: translateY(7px); display: inline-block">VRVP</span></div>
+                    </div>
+                </div>
+
+                <div id="dpd-drawings" class="ot">
+                    <div class="ot" style="width: 25px; height: 25px">
+                        <div>
+                            <img class="cf-white" src="/static/icons/pincel.png" width="25" height="25">
+                        </div>
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Drawings</div>
+                    </div>
+
+                    <div class="fc" style="max-width: 300px;">
+                        <div class="item fr" draw="vline">
+                            <div>
+                                <img style="transform: rotate(90deg);" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                            </div>
+                            <div class="mr10">Vertical Line</div>
+                        </div>
+                        <div class="item fr" draw="hline">
+                            <div>
+                                <img class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                            </div>
+                            <div class="mr10">Horizontal Line</div>
+                        </div>
+                        <div class="item fr" draw="trendline">
+                            <div>
+                                <img style="transform: rotate(-45deg);" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                            </div>
+                            <div class="mr10">Trend Line</div>
+                        </div>
+                        <div class="item fr" draw="brush">
+                            <div>
+                                <img class="cf-white" src="/static/icons/pincel.png" width="25" height="25">
+                            </div>
+                            <div class="mr10">Brush</div>
+                        </div>
+                        <div class="item fr" draw="fibret">
+                            <div>
+                                <img style="position: absolute; top: -9px" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                                <img style="position: absolute; top: -3px" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                                <img style="position: absolute; top: 3px" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                                <img style="position: absolute; top: 9px" class="cf-white" src="/static/icons/dashed_line.png" width="25" height="25">
+                            </div>
+                            <div class="mr10">Fibonacci Retracement</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="btn-ruler" class="ot noopen" draw_mode="ruler">
+                    <div class="ot" style="width: 25px; height: 25px">
+                        <div>
+                            <img class="cf-white" src="/static/icons/ruler.png" width="25" height="25">
+                        </div>
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Ruler</div>
+                    </div>
+                </div>
+
+                <div id="dpd-select" class="ot">
+                    <div class="ot" style="width: 25px; height: 25px">
+                        <div>
+                            <img class="cf-white" src="/static/icons/hand.png" width="25" height="25">
+                        </div>
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Select</div>
+                    </div>
+
+                    <div class="fc" style="max-width: 400px">
+                        <div class="item" action="select"><span style="transform: translateY(7px); display: inline-block">Select all drawings</span></div>
+                        <div class="item" action="deselect"><span style="transform: translateY(7px); display: inline-block">Deselect all drawings</span></div>
+                        <div class="item" action="show-select-draw"><span style="transform: translateY(7px); display: inline-block">Select and show hidden drawings</span></div>
+                    </div>
+                </div>
+
+                <div id="dpd-hide" class="ot">
+                    <div class="ot" style="width: 25px; height: 25px">
+                        <div>
+                            <img class="cf-white" src="/static/icons/eye.png" width="25" height="25">
+                        </div>
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Hide</div>
+                    </div>
+
+                    <div class="fc" style="max-width: 400px">
+                        <div class="item" action="show-inds"><span style="transform: translateY(7px); display: inline-block">Show all indicators</span></div>
+                        <div class="item" action="hide-inds"><span style="transform: translateY(7px); display: inline-block">Hide all indicators</span></div>
+                        <div class="item" action="show-draw"><span style="transform: translateY(7px); display: inline-block">Show hidden drawings</span></div>
+                        <div class="item" action="hide-draw"><span style="transform: translateY(7px); display: inline-block">Hide all drawings</span></div>
+                        <div class="item" action="hide-selected"><span style="transform: translateY(7px); display: inline-block">Hide selected drawings</span></div>
+                    </div>
+                </div>
+
+                <div id="dpd-delete" class="ot">
+                    <div class="ot" style="width: 25px; height: 25px">
+                        <div>
+                            <img class="cf-white" src="/static/icons/trash.png" width="25" height="25">
+                        </div>
+                    </div>
+
+                    <div class="tooltip">
+                        <div>Delete</div>
+                    </div>
+
+                    <div class="fc" style="max-width: 300px">
+                        <div class="item" action="inds"><span style="transform: translateY(7px); display: inline-block">Delete all indicators</span></div>
+                        <div class="item" action="draw"><span style="transform: translateY(7px); display: inline-block">Delete all drawings</span></div>
+                        <div class="item" action="draw-selected"><span style="transform: translateY(7px); display: inline-block">Delete selected drawings</span></div>
+                    </div>
+                </div>
+
+                <img onclick="window.location='/assets{% if request.GET.prev %}?asset_type={{request.GET.prev}}{% endif %}'" class="cf-white btn-exit" src="/static/icons/arrow_up_left_circled.png" width="25" height="25">
+            </div>
+
+            <div id="main-container" class="w100 h100 fr" style="position: relative">
+                <div id="chart" class="h100" style="width: calc(100% - 250px)"></div>
+                <div id="trading" class="fc {% if not asset.is_market_open %}disabled{% endif %}">
+                    <div style="padding: 20px; padding-bottom: 0; font-size: 18pt; font-weight: bold">Balance</div>
+                    <div id="user_balance" style="padding: 20px; font-size: 14pt; font-weight: bold; color: var(--text); opacity: 0.5">
+                        {{user.balance | balance_filter}}$ {% if user_total_pnl != 0 %}<span style="color: var(--{% if user_total_pnl >= 0 %}green{% else %}red{% endif %})">({{user_total_pnl_f}}$)</span>{% endif %}
+                    </div>
+
+                    <div style="padding: 20px; padding-bottom: 0; font-size: 18pt; font-weight: bold">Trading</div>
+                    <div style="padding: 20px">
+                        <div style="font-size: 12pt; color: var(--text); margin-bottom: 10px;">Leverage</div>
+                        <input type="range" min="1" max="5" value="1" name="leverage">
+                        <datalist id="leverage" class="mb20">
+                            <option value="1" label="1x"></option>
+                            <option value="2" label="2x"></option>
+                            <option value="3" label="3x"></option>
+                            <option value="4" label="4x"></option>
+                            <option value="5" label="5x"></option>
+                        </datalist>
+
+                        <div style="font-size: 12pt; color: var(--text); margin-bottom: 10px;">Order type</div>
+                        <select name="order_type" onchange="orderTypeChange(this)" class="w100 mb20">
+                            <option value="market">Market</option>
+                            <option value="limit">Limit</option>
+                        </select>
+
+                        <div style="font-size: 12pt; color: var(--text); margin-bottom: 10px;">Size</div>
+                        <div class="order_size fr">
+                            <div data-type="total" onclick="sizeTypeChange(this)" style="margin-right: 5px; padding: 10px; background-color: var(--black); border-radius: 10px; height: 40px; width: 40px; text-align: center; cursor: pointer; transition: all 0.2s ease;">$</div>
+                            <input type="text" onchange="onChangeOrderSize(this)" value="{{default_order_size | balance_filter}}" class="mb20" style="width: calc(100% - 40px); margin-left: 5px">
+                        </div>
+
+                        <div class="order_price op0">
+                            <div style="font-size: 12pt; color: var(--text); margin-bottom: 10px;">Price</div>
+                            <div class="fr">
+                                <input type="text" onchange="onChangeOrderPrice(this)" value="{{asset.bid_price_rounded}}" class="mb20" style="width: 100%">
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12pt; color: var(--text); margin-bottom: 10px;">Action</div>
+                        <div class="fr w100 btns">
+                            <div class="long">Long</div>
+                            <div class="short">Short</div>
+                        </div>
+
+                        <div class="prices fr jb w100" style="margin-top: 10px">
+                            <div>{{asset.ask_price_rounded}}</div>
+                            <div>{{asset.bid_price_rounded}}</div>
+                        </div>
+                    </div>
+
+                    <div class="fr history" onclick="historyClicked(this)" style="padding: 20px; padding-bottom: 0; cursor: pointer" data-value="positions">
+                        <div style="font-size: 18pt; font-weight: bold; transition: all 0.2s ease; color: var(--blue)">Positions</div>
+                        <span style="margin-top: 6px; margin-left: 5px">
+                            <svg width="8" height="14" viewBox="0 0 8 14">
+                                <path fill="none" fill-rule="evenodd" stroke="#5C7AFF" stroke-linecap="square" stroke-width="2.5" d="M2 2l4 5-4 5"></path>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="history-list" style="padding: 20px; overflow: scroll; height: auto; max-height: 400px;">
+                        <div class="noordpos {% if positions|length > 0 %}op0{% endif %}" style="background: none; text-align: center; margin-top: auto; margin-bottom: auto">No data</div>
+
+                        {% for i in orders %}
+                            <div class="fc order {% if i.status != 'p' %}closed{% endif %} op0">
+                                {% if i.status == 'p' and i.order_type == 'l' %}
+                                    <img class="close cf-red" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -8px; right: -7px" data-order-id="{{i.id}}">
+                                {% endif %}
+                                <div class="fr jb mb10">
+                                    <div style="font-size: 10pt">{{i.order_type | order_type_filter}} {{i.side | order_side_filter}}</div>
+                                    <div style="font-size: 10pt; color: var(--orange)">{{i.price}}</div>
+                                </div>
+                                <div class="fr jb">
+                                    <div style="font-size: 10pt; color: var(--{{i.status | order_status_color_filter}}); opacity: 1">{{i.status | order_status_filter}}</div>
+                                    <div style="font-size: 10pt">{{i.size | balance_filter}}{% if i.size_type == 't' %}${% else %}#{% endif %}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        {% for i in positions %}
+                            <div class="fc position {% if i.status == 'c' %}closed{% endif %}" data-dollar-size="{{i.dollar_size}}" data-calc-price="{{i.calc_price}}">
+                                {% if i.status == 'o' %}
+                                    <img class="close cf-red" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -8px; right: -7px" data-pos-id="{{i.id}}">
+                                {% endif %}
+                                <div class="fr jb mb10"> 
+                                    <div style="color: var(--text); opacity: 1; font-size: 12pt; background-color: var(--{% if i.side == 'l' %}green{% else %}red{% endif %}); width: 18px; height: 18px; border-radius: 5px; text-align: center; font-weight: bold">{% if i.side == 'l' %}L{% else %}S{% endif %}</div>
+                                    <div style="color: var(--orange); font-size: 10pt">{{i.dollar_size | balance_filter}}{% if i.size_type == 't' %}${% else %}#{% endif %}</div>
+                                </div>
+                                <div class="fr jb mb10">
+                                    <div style="color: var(--text); font-size: 10pt">{{i.entry_price}}</div>
+                                    <div style="color: var(--orange); font-size: 10pt">{{i.leverage}}x</div>
+                                </div>
+                                <div class="fr js">
+                                    <div style="color: var(--{{i.pnl | price_perc_class}}); font-size: 10pt">{{i.get_dollar_pnl}}$ ({{i.pnl | price_perc_filter}}%)</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Indicators' data tooltip -->
+                <div class="ind-tooltip fr je">
+                    <div class="fc" style="width: auto"></div>
+                </div>
+
+                <!-- Main series tooltip -->
+                <div class="ms-tooltip green">
+                    <div style="display: inline-block; width: auto; margin-bottom: 5px;" class="asset_name">
+                        <div class="fr">
+                            <div class="dot mr10" style="background-color: var(--{% if asset.is_market_open %}green{% else %}black-hover-hover{% endif %});">
+                                <div>{% if asset.is_market_open %}Market open{% else %}Market closed{% endif %}</div>
+                            </div>
+
+                            <div style="font-size: 20pt">{{asset.asset}}</div>
+
+                            <div class="input-select tf-change ml10">
+                                <select>
+                                    <option {% if chart.tf == '1m' %}selected{% endif %} value="1m">1m</option>
+                                    <option {% if chart.tf == '5m' %}selected{% endif %} value="5m">5m</option>
+                                    <option {% if chart.tf == '15m' %}selected{% endif %} value="15m">15m</option>
+                                    <option {% if chart.tf == '30m' %}selected{% endif %} value="30m">30m</option>
+                                    <option {% if chart.tf == '1h' %}selected{% endif %} value="1h">1h</option>
+                                    <option {% if chart.tf == '4h' %}selected{% endif %} value="4h">4h</option>
+                                    <option {% if chart.tf == '1D' %}selected{% endif %} value="1D">1D</option>
+                                </select>
+                                <span>
+                                    <svg width="8" height="14" viewBox="0 0 8 14">
+                                        <path fill="none" fill-rule="evenodd" stroke="#5C7AFF" stroke-linecap="square" stroke-width="1.5" d="M2 2l4 5-4 5"></path>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr">
+                        <div class="mr10">O: <span>-</span></div>
+                        <div class="mr10">H: <span>-</span></div>
+                        <div class="mr10">L: <span>-</span></div>
+                        <div class="mr10">C: <span>-</span></div>
+                    </div>
+                    <div style="display: inline-block; width: auto; margin-top: 5px;"><span>-</span></div>
+                </div>
+
+                <!-- UI for editing drawings -->
+                <div id="draw-edit" class="">
+                    <div class="fr op0">
+                        <label class="mr10"><input type="color"></label>
+                        <select class="small mr10">
+                            <option value="0">Solid</option>
+                            <option value="1">Dotted</option>
+                            <option value="2">Dashed</option>
+                        </select>
+                        <input class="small" type="number" value="2" style="width: 75px">
+                        <div onclick="drawEditCreateFibretUI(this)" class="settings op0 ml10">
+                            <img class="cf-white" src="/static/icons/settings.png" width="25" height="25">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="draw-edit-inputs" class="inputs op0">
+                    <div class="fr jb mb20" style="position: relative">
+                        <div class="fr">
+                            <div class="title">Fibonacci Retracement</div>
+                        </div>
+                        <img onclick="indSettingsCloseOnClicked(this)" class="close cf-red" src="{% static 'icons/cross.png' %}" width="25" height="25">
+                        <div style="position: absolute; border-bottom: 1px solid gray; bottom: -20px; left: -20px; width: calc(100% + 40px)"></div>
+                    </div>
+            
+                    <div class="fc inps"></div>
+            
+                    <div class="fr jb mt40" style="position: relative;">
+                        <div style="position: absolute; border-top: 1px solid gray; top: -20px; left: -20px; width: calc(100% + 40px)"></div>
+                        <div onclick="st_FibretLevel_Add(this)" class="fr onh-blue" style="padding-inline: 10px; background-color: var(--black); border-radius: 10px; padding-left: 12px; cursor: pointer;">
+                            <div onclick="" style="font-size: 14pt; margin-top: 9px; color: var(--text)" class="mr10">New Level</div>
+                            <img class="add cf-white" src="/static/icons/plus.png" width="23" height="23" style="margin-top: 8px">
+                        </div>
+                        <button onclick="st_FibretLevel_save()" type="button">Save</button>
+                    </div>
+                </div>
+
+                <!-- Default indicators -->
+                <!-- UNCOMMENT -->
+                {% if chart.settings.indicators.ma_ribbon.on %}
+                    {{ ma_ribbon | safe }}
+                {% endif %}
+
+                {% if chart.settings.indicators.vol.on %}
+                    {{ vol | safe }}
+                {% endif %}
+
+                {% if chart.settings.indicators.macd.on %}
+                    {{ macd | safe }}
+                {% endif %}
+
+                {% if chart.settings.indicators.rsi.on %}
+                    {{ rsi | safe }}
+                {% endif %}
+                
+                {% if chart.settings.indicators.vrvp.on %}
+                    {{ vrvp | safe }}
+                {% endif %}
+            </div>
+        </div>
+    </body>
+
+    <script>
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // Current balance of user
+        user_balance = {{user.balance}};
+        default_order_size = {{default_order_size}};
+        // Price scale precision
+        price_k = {{asset.precision}};
+        // Drawings
+        draw_mode = 'cursor';
+        drawings = {% if chart.settings.drawings %} {{chart.settings.drawings | boolean_safety | safe}} {% else %} [] {% endif %};
+        cur_param = null;
+        bartime_diff = 1000000000000;
+        // Trendline, ruler, fibonacci
+        trendline_ = null;  
+        trendline_price1 = null;
+        trendline_time1 = null;
+        trendline_data = null;
+        // Fibonacci retracement
+        fibret_levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.618, 2.618, 3.618, 4.236];
+        // Ruler
+        ruler_start = null;
+        ruler_end = null;
+        ruler_fill = null;
+        ruler_bot = null;
+        ruler_top = null;
+        // Is mouse down?
+        mouse_down = false;
+        // Brush
+        brush_data = [];
+        brush_init_point = null;
+        // Height of "main" series pane
+        main_pane_height = null;
+        // Current range start and end bar_index
+        cur_start_bi = null; 
+        cur_end_bi = null;
+        // Current max/min price (in visible range)
+        cur_lowest_price = null;
+        cur_highest_price = null;
+        // Current max/min position in pixels
+        cur_lowest_px = null;
+        cur_highest_px = null;
+    </script>
+
+    <script>
+        // Replace all occurences
+        function escapeRegExp(string) {
+            console.log(string)
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
+        }
+
+        function replaceAll(str, find, replace) {
+            return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
+        }
+
+        // When order size input is changed
+        function onChangeOrderSize(this_, cond__=false) {
+            bid = $('#trading .prices > div:nth-child(1)').text();
+            fbid = parseFloat(bid);
+ 
+            val = replaceAll($(this_).val().trim(), ',', '');
+            valpf = parseFloat(val);
+            valf = String(valpf);
+
+            if (valf == 'NaN' || val == '') {
+                if ($('.order_size > div').attr('data-type') == 'asset') {
+                    $(this_).val(Math.round((default_order_size / fbid) * 100) / 100);
+                } else {
+                    $(this_).val(default_order_size);
+                }   
+            } else {
+                $(this_).val(String(Math.floor(valpf * 100) / 100));
+            }
+
+            $(this_).val(formatBalance($(this_).val()));
+        }
+
+        // When order price input is changed
+        function onChangeOrderPrice(this_) {
+            bid = $('#trading .prices > div:nth-child(1)').text();
+            fbid = parseFloat(bid);
+
+            val = replaceAll($(this_).val().trim(), ',', '');
+            valpf = parseFloat(val);
+            valf = String(valpf);
+
+            if (valf == 'NaN' || val == '') {
+                $(this_).val(bid);
+            } else {
+                if ((valpf <= fbid / 2) || (valpf >= fbid * 2)) {
+                    $(this_).val(bid);
+                } else {
+                    mlk = Math.pow(10, {{asset.precision}});
+                    $(this_).val(replaceAll(String(Math.round(valpf * mlk) / mlk), ',', ''));
+                }
+            }
+        }
+
+        // 
+        function historyClicked(this_) {
+            va_ = $(this_).attr('data-value');
+            if (va_ == 'positions') {
+                $(this_).find('div').text('Orders');
+                $(this_).attr('data-value', 'orders');
+                $('.history-list > div.order').removeClass('op0');
+                $('.history-list > div.position').addClass('op0');
+                if ($('.history-list > div.order').length > 0) {
+                    $('.noordpos').addClass('op0');
+                } else {
+                    $('.noordpos').removeClass('op0');
+                }
+            } else {
+                $(this_).find('div').text('Positions');
+                $(this_).attr('data-value', 'positions');
+                $('.history-list > div.order').addClass('op0');
+                $('.history-list > div.position').removeClass('op0');
+                if ($('.history-list > div.position').length > 0) {
+                    $('.noordpos').addClass('op0');
+                } else {
+                    $('.noordpos').removeClass('op0');
+                }
+            }
+        }
+
+        // On change of order type
+        function orderTypeChange(this_) {
+            if ($(this_).find('option:selected').attr('value') == 'market') {
+                $('.order_price').addClass('op0');
+                console.log($('.asset_name .dot > div').text())
+                if ($('.asset_name .dot > div').text() == 'Market open') {
+                    $('#trading').removeClass('disabled');
+                } else {
+                    $('#trading').addClass('disabled');
+                }
+            } else {
+                $('.order_price').removeClass('op0');
+                $('#trading').removeClass('disabled');
+            }
+        }
+
+        // Size type change
+        function sizeTypeChange(this_) {
+            bid = $('#trading .prices > div:nth-child(1)').text();
+            fbid = parseFloat(bid);
+
+            val_ = parseFloat(replaceAll($('.order_size > input').val(), ',', ''));
+
+            if ($(this_).attr('data-type') == 'total') {
+                $(this_).attr('data-type', 'asset').text('#');
+                $('.order_size > input').val(formatBalance(replaceAll(String(Math.round(val_ / fbid * 100) / 100), ',', '')));
+            } else {
+                $(this_).attr('data-type', 'total').text('$');
+                $('.order_size > input').val(formatBalance(replaceAll(String(Math.round(val_ * fbid * 100) / 100), ',', '')));
+            }
+        }
+
+        // Timeframe change
+        $('.tf-change > select').on('change', function() {
+            window.location = '/chart/' + '{{asset.id}}_{{asset.asset}}?tf=' + $(this).find('option:selected').attr('value') + '{% if request.GET.prev %}&prev={{request.GET.prev}}{% endif %}';
+        })
+
+        // For "onclick" effect 
+            $('#trading .order_size > div').on('mousedown mouseup mouseleave', function(e) {
+            $(this).toggleClass( "css_active", e.type === "mousedown" );
+        })
+
+        // For "onclick" effect of left-menu <div> buttons
+        $('#left-menu > div').on('mousedown mouseup mouseleave', function(e) {
+            $(this).toggleClass( "css_active", e.type === "mousedown" );
+        })
+
+        // For "onclick" effect of long/short trading buttons
+        $('#trading .btns > div').on('mousedown mouseup mouseleave', function(e) {
+            $(this).toggleClass( "css_active", e.type === "mousedown" );
+        })
+
+        // On change of color picker of drawing UI
+        $('#draw-edit > div > label > input[type="color"]').on('change', function() {
+            this.parentNode.style.backgroundColor = this.value;
+            for (i2_ = 0; i2_ < drawings.length; i2_++) {
+                drawing = drawings[i2_];
+                if (drawing.selected) {
+                    if (drawing.type == 'fibret') {
+                        for (i3_ = 0; i3_ < drawing.colors.length; i3_++) {
+                            drawing.colors[i3_] = this.value.slice(0, 7) + (drawing.selected ? 'ff' : 'a5');
+                        }
+                    } else {
+                        drawing.color = this.value.slice(0, 7) + (drawing.selected ? 'ff' : 'a5');
+                    }
+                }
+            }
+        });
+
+        // Style is changed
+        $('#draw-edit > div > select').on('change', function() {
+            val = $(this).find('option:selected').attr('value');
+            for (i2_ = 0; i2_ < drawings.length; i2_++) {
+                drawing = drawings[i2_];
+                if (drawing.selected) {
+                    if (drawing.type == 'fibret') {
+                        for (i3_ = 0; i3_ < drawing.styles.length; i3_++) {
+                            drawing.styles[i3_] = val;
+                        }
+                    } else {
+                        drawing.style = val;
+                    }
+                }
+            }
+        });
+
+        // When width is changed in UI of editing drawings
+        $('#draw-edit > div > input').on('change', function() {
+            val = $(this).val();
+            for (i2_ = 0; i2_ < drawings.length; i2_++) {
+                drawing = drawings[i2_];
+                if (drawing.selected) {
+                    if (drawing.type == 'fibret') {
+                        for (i3_ = 0; i3_ < drawing.widths.length; i3_++) {
+                            drawing.widths[i3_] = val;
+                        }
+                    } else {
+                        drawing.width = val;
+                    }
+                }
+            }
+        });
+
+        // On click of Save chart button
+        $('#btn-save').on('click', function() {
+            chartSave('{{asset.id}}', '{{chart.tf}}');
+        })
+
+        // On click of item in drawings dropdown 
+        $('#dpd-drawings .item').on('click', function() {
+            if (!$(this).hasClass('disabled')) {
+                $('#left-menu > div.noopen').removeClass('active');
+
+                draw_mode = $(this).attr('draw');
+                $('#dpd-drawings .item').removeClass('active');
+                $(this).addClass('active');
+ 
+                $(this).closest('.open').find('.tooltip').show();
+                $('#dpd-drawings').removeClass('open');
+
+                $('#dpd-drawings > .ot').html($(this).find(':first-child').clone().html()); 
+                $('#dpd-drawings > div > div > img').removeClass('cf-white').addClass('cf-blue');
+            }
+        });
+
+        // On click of item in hide dropdown 
+        $('#dpd-hide .item').on('click', function() {
+            if (!$(this).hasClass('disabled')) {
+                act = $(this).attr('action');
+                if (act == 'hide-inds') {  // Hide all indicators
+                    if (ribbon_ma) {
+                        visibilityOnClick($('#ind-ma-ribbon .visibility'), ribbon_ma, -1);
+                    }
+                    if (vol_) {
+                        visibilityOnClick($('#ind-vol .visibility'), vol_, -1);
+                    }
+                    if (macd_) {
+                        visibilityOnClick($('#ind-macd .visibility'), macd_, -1);
+                    }
+                    if (rsi) {
+                        visibilityOnClick($('#ind-rsi .visibility'), rsi, -1);
+                    }
+                    if (vrvp) {
+                        visibilityOnClick_VRVP($('#ind-vrvp .visibility'), -1);
+                    }
+                } else if (act == 'show-inds') {  // Show all indicators 
+                    if (ribbon_ma) {
+                        visibilityOnClick($('#ind-ma-ribbon .visibility'), ribbon_ma, 1);
+                    }
+                    if (vol_) {
+                        visibilityOnClick($('#ind-vol .visibility'), vol_, 1);
+                    }
+                    if (macd_) {
+                        visibilityOnClick($('#ind-macd .visibility'), macd_, 1);
+                    }
+                    if (rsi) {
+                        visibilityOnClick($('#ind-rsi .visibility'), rsi, 1);
+                    }
+                    if (vrvp) {
+                        visibilityOnClick_VRVP($('#ind-vrvp .visibility'), 1);
+                    }
+                } else if (act == 'hide-draw') {  // Hide all drawings
+                    changeVisibilityDrawings(false, false);
+                    displayDrawEditUI();
+                } else if (act == 'show-draw') {  // Show hidden drawings
+                    changeVisibilityDrawings(true, false, false);
+                    displayDrawEditUI();
+                } else if (act == 'hide-selected') {  // Hide selected drawings
+                    changeVisibilityDrawings(false, true);
+                    displayDrawEditUI();
+                }
+                // Close dropdown
+                $(this).parent().parent().find('.tooltip').show();
+                $(this).parent().parent().removeClass('open');
+            }
+        });
+
+        // On click of item in select dropdown 
+        $('#dpd-select .item').on('click', function() {
+            if (!$(this).hasClass('disabled')) {
+                act = $(this).attr('action');
+                // Select all visible drawings
+                if (act == 'select') {
+                    dlll_ = drawings.length;
+                    for (i = 0; i < dlll_; i++) {
+                        drawing = drawings[i];
+                        if (drawing.visible) {
+                            selectDrawing(drawing, true);
+                        }
+                    }
+                } else if (act == 'deselect') {  // deselect all visible
+                    dlll_ = drawings.length;
+                    for (i = 0; i < dlll_; i++) {
+                        drawing = drawings[i];
+                        if (drawing.visible) {
+                            selectDrawing(drawing, false);
+                        }
+                    }
+                } else if (act == 'show-select-draw') {  // select and show all hidden drawings
+                    dlll_ = drawings.length;
+                    for (i = 0; i < dlll_; i++) {
+                        drawing = drawings[i];
+                        if (!drawing.visible) {
+                            selectDrawing(drawing, true);
+                        }
+                    }
+                    changeVisibilityDrawings(true, false, false);
+                }
+                // 
+                displayDrawEditUI();
+                // Close dropdown
+                $(this).parent().parent().find('.tooltip').show();
+                $(this).parent().parent().removeClass('open');
+            }
+        })
+
+        // On click of item in delete dropdown 
+        $('#dpd-delete .item').on('click', function() {
+            if (!$(this).hasClass('disabled')) {
+                act = $(this).attr('action');
+                if (act == 'inds') {
+                    if (ribbon_ma) {
+                        for (const cs of ribbon_ma['data']) {
+                            chart.removeSeries(cs);
+                        }
+                        ribbon_ma = null;
+                    }
+ 
+                    if (vol_) {
+                        for (const cs of vol_['data']) {
+                            chart.removeSeries(cs);
+                        }
+                        vol_ = null;
+                    }
+
+                    if (macd_) {
+                        for (const cs of macd_['data']) {
+                            chart.removeSeries(cs);
+                        }
+                        macd_ = null;
+                    }
+                    
+                    if (rsi) {
+                        for (const cs of rsi['data']) {
+                            chart.removeSeries(cs);
+                        }
+                        rsi = null;
+                    }
+
+                    if (window.vrvp) {
+                        window.vrvp = null;
+                    }
+
+                    // Enable options in "Add indicators" dropdown
+                    $('#dpd-indicators .item[ind="ma-ribbon"]').removeClass('disabled');
+                    $('#dpd-indicators .item[ind="macd"]').removeClass('disabled');
+                    $('#dpd-indicators .item[ind="rsi"]').removeClass('disabled');
+                    $('#dpd-indicators .item[ind="vol"]').removeClass('disabled');
+                    $('#dpd-indicators .item[ind="vrvp"]').removeClass('disabled');
+                    // Remove from tooltip
+                    $('.ind-tooltip div[ind="ind-ma-ribbon"]').remove();
+                    $('.ind-tooltip div[ind="ind-macd"]').remove();
+                    $('.ind-tooltip div[ind="ind-rsi"]').remove();
+                    $('.ind-tooltip div[ind="ind-vol"]').remove();
+                    $('.ind-tooltip div[ind="ind-vrvp"]').remove();
+                    // Remove indicator row
+                    $('.ind').remove();
+                    // Resize price scales
+                    resizePriceScales(chart);
+                } else if (act == 'draw') {
+                    deleteDrawings();
+                    displayDrawEditUI();
+                } else if (act == 'draw-selected') {
+                    deleteDrawings(true);
+                    displayDrawEditUI();
+                }
+                // Close dropdown
+                $(this).parent().parent().find('.tooltip').show();
+                $(this).parent().parent().removeClass('open');
+            }
+        });
+
+        $(window).on('resize', function() {
+            chart.resize($('#chart').width(), $('#chart').height());
+        })
+
+        // On click of left-menu dropdown
+        $('#left-menu > div:not(.noopen)').on('click', function(evt) {
+            if ($(evt.target).hasClass('ot') || ($(evt.target).is('img') && $(evt.target).hasClass('cf-white'))) {
+                s_ = $(this).hasClass('open');
+                $('#left-menu > div.open').removeClass('open');
+                $('#left-menu .tooltip').show();
+                if (s_) {
+                    $(this).find('.tooltip').show();
+                    $(this).removeClass('open');
+                } else {
+                    $(this).find('.tooltip').hide();
+                    $(this).addClass('open');
+                }
+            }
+        })
+
+        // On click of left-menu buttons
+        $('#left-menu > div.noopen:not(.noactive)').on('click', function(evt) {
+            $('#left-menu > div.noopen').removeClass('active');
+            $('#left-menu > div.open').removeClass('open');
+            $('#left-menu > div:not(.noopen) div.fc > div.item').removeClass('active');
+            $(this).addClass('active');
+            draw_mode = $(this).attr('draw_mode');
+        });
+
+        // On click of item in indicator dropdown 
+        $('#dpd-indicators .item').on('click', function() {
+            if (!$(this).hasClass('disabled')) {
+                a_ = $(this).attr('ind');
+                $(this).closest('.open').find('.tooltip').show();
+                $('#dpd-indicators').removeClass('open');
+                
+                $.ajax({
+                    url: '/api/chart/request_indicator_ui',
+                    type: "GET",
+                    dataType: 'json',
+                    data: {
+                        'indicator': a_.replace('-', '_')
+                    },
+                    success: (data) => {
+                        if (data['status'] == 'ok') {
+                            $('#main-container').append(data['data']);
+                        }
+                        if (a_ == 'ma-ribbon') {
+                            ribbon_ma = init_MA_Ribbon();
+                            $('#dpd-indicators .item[ind="ma-ribbon"]').addClass('disabled');
+                        } else if (a_ == 'vol') {
+                            vol_ = init_VOL();
+                            $('#dpd-indicators .item[ind="vol"]').addClass('disabled');
+                        } else if (a_ == 'macd') {
+                            macd_ = init_MACD();
+                            $('#dpd-indicators .item[ind="macd"]').addClass('disabled');
+                        } else if (a_ == 'rsi') {
+                            rsi = init_RSI();
+                            $('#dpd-indicators .item[ind="rsi"]').addClass('disabled');
+                        } else if (a_ == 'vrvp') {
+                            window.vrvp = init_VRVP();
+                            $('#dpd-indicators .item[ind="vrvp"]').addClass('disabled');
+                        }
+                        resizePriceScales(chart);
+                    },
+                    error: (error) => {
+                        console.log(error);
+                    }
+                });
+            }
+        })
+
+        // When the eye icon of VRVP is clicked
+        function visibilityOnClick_VRVP(this_, show=0) {
+            if (show == 0) {
+                $(this_).toggleClass('yes');
+                window.vrvp_visible = !window.vrvp_visible;
+            } else {
+                if (show == 1) {
+                    $(this_).addClass('yes');
+                    window.vrvp_visible = true;
+                } else {
+                    $(this_).removeClass('yes');
+                    window.vrvp_visible = false;
+                }
+            }
+
+            if (show == 0 ? ($(this_).hasClass('yes')) : (show == 1)) {
+                span_ = $(this_).closest('.ind').find('span > span');
+                span_.css('color', span_.attr('vis-color'));
+            } else {
+                $(this_).closest('.ind').find('span > span').css('color', 'gray');
+            }
+        }
+
+        // When the eye icon in settings of indicator is clicked
+        function visibilityOnClick(this_, chart_series_list, show=0) {
+            if (show == 0) {
+                $(this_).toggleClass('yes');
+            } else {
+                if (show == 1) {
+                    $(this_).addClass('yes');
+                } else {
+                    $(this_).removeClass('yes');
+                }
+            }
+
+            try {
+                for (const cs of chart_series_list['data']) {
+                    if (show == 0) {
+                        cs.applyOptions({visible: $(this_).hasClass('yes')});
+                    } else {
+                        cs.applyOptions({visible: show == 1});
+                    }
+                }
+            } catch {}
+
+            ind_attr = $(this_).parent().parent().attr('id');
+            div1_ = $('.ind-tooltip div[ind="' + ind_attr + '"] div:nth-child(1)');
+            div2_ = $('.ind-tooltip div[ind="' + ind_attr + '"] div:nth-child(2)');
+
+            if (show == 0 ? ($(this_).hasClass('yes')) : (show == 1)) {
+                span_ = $(this_).closest('.ind').find('span > span');
+                span_.css('color', span_.attr('vis-color'));
+                div1_.css('color', 'var(--blue)');
+                div2_.css('color', 'var(--text)');
+            } else {
+                $(this_).closest('.ind').find('span > span').css('color', 'gray');
+                div2_.text('-');
+                div1_.css('color', 'gray');
+                div2_.css('color', 'gray');
+            }
+
+            // Resize price scales
+            resizePriceScales(chart, show);
+        }
+
+        // Close indicator's settings popup
+        function indSettingsCloseOnClicked(this_) {
+            $(this_).closest('.inputs').addClass('op0');
+            $(this_).closest('.inputs').find('.inps').html($(this_).closest('.inputs').find('.last-inps').html());
+            // $(this_).closest('.inputs').find('.inps .period.op0').removeClass('op0');
+        }
+
+        // Handles click on indicators' rows and cross icons
+        function indRowOnClick(evt, this_) {
+            // If we did not click on eye icon (which is handled by visibilityOnClick)
+            if (!$(evt.target).hasClass('visimg')) {
+                // Open settings of indicator
+                if (!$(evt.target).hasClass('close')) {
+                    $('.inputs').addClass('op0');
+                    $(this_).next('.inputs').removeClass('op0');
+                } else {  // if we clicked on cross icon
+                    chart_series_list_name = $(evt.target).attr('series-list-name');
+                    if (chart_series_list_name) {
+                        for (const cs of eval(chart_series_list_name)['data']) {
+                            chart.removeSeries(cs);
+                        }
+                    }
+                    id_un_ = $(this_).parent().attr('id');
+                    // Enable options in "Add indicators" dropdown
+                    $('#dpd-indicators .item[ind="' + id_un_.replace('ind-', '') +'"]').removeClass('disabled');
+                    // Remove from tooltip
+                    $('.ind-tooltip div[ind="' + id_un_ + '"]').remove();
+                    // Remove indicator row
+                    $(this_).closest('.ind').remove();
+                    // Resize price scales
+                    resizePriceScales(chart);
+                    // Set variable to null
+                    if (chart_series_list_name == 'ribbon_ma') {
+                        ribbon_ma = null;
+                    } else if (chart_series_list_name == 'vol_') {
+                        vol_ = null;
+                    } else if (chart_series_list_name == 'macd_') {
+                        macd_ = null;
+                    } else if (chart_series_list_name == 'rsi') {
+                        rsi = null;
+                    } else if (id_un_ == 'ind-vrvp') {
+                        window.vrvp = null;
+                    }
+                } 
+            }  
+        }
+    </script>
+
+    <script>
+        // Called continuously when second point of fibonacci retracement/trendline/ruler are created
+        function interval_secondPoint() {
+            try {
+                time_ = cur_param.time;
+                if (time_ == undefined) {
+                    time_ = last_cur_param_time;
+                }
+
+                plimits = getPriceLimits();
+                cur_price = getCurrentPrice();
+
+                cp1_ = trendline_data.value;
+                cp2_ = cur_price;
+                if (time_ < trendline_data.time) {
+                    cp1_ = cur_price;
+                    cp2_ = trendline_data.value;
+                }
+
+                trendline_.setData([
+                    {time: Math.min(time_, trendline_data.time), value: cp1_},
+                    {time: Math.max(time_, trendline_data.time), value: cp2_}
+                ])
+
+                // For setting second point of ruler
+                if (draw_mode == 'ruler') {
+                    // Calculate coordinates and prices
+                    t1_ = time_;
+                    p1_ = cur_price;
+                    if (trendline_data.time < t1_) {
+                        t1_ = trendline_data.time;
+                        p1_ = trendline_data.value;
+                    }
+                    t2_ = time_;
+                    p2_ = cur_price;
+                    if (trendline_data.time > t2_) {
+                        t2_ = trendline_data.time;
+                        p2_ = trendline_data.value;
+                    }
+                    d1_ = {time: t1_, value: p1_};
+                    d2_ = {time: t2_, value: p2_};
+                    // Set line data
+                    trendline_.setData([d1_, d2_]);
+                    // Set start and end points data
+                    if (trendline_data.time < time_) {
+                        ruler_start.setData([d1_]);
+                    } else {
+                        ruler_start.setData([d2_]);
+                    }
+                    //
+                    ruler_bot.setData([{time: t2_, value: Math.min(trendline_data.value, cur_price)}]);
+                    ruler_top.setData([{time: t2_, value: Math.max(trendline_data.value, cur_price)}]);
+                    // Difference in bars
+                    bi_cur = chart.timeScale().coordinateToLogical(chart.timeScale().timeToCoordinate(time_));
+                    bi_diff = bi_cur - trendline_data.bi; 
+                    //
+                    pd_ = Number((cur_price - trendline_data.value).toFixed(price_k));
+                    if (pd_ >= 0) {
+                        pd_ = '+' + String(pd_);
+                    } else {
+                        pd_ = String(pd_);
+                    }
+                    pdp_ = Number((pd_ / trendline_data.value * 100).toFixed(2));
+                    if (pdp_ >= 0) {
+                        pdp_ = '+' + String(pdp_);
+                    } else {
+                        pdp_ = String(pdp_);
+                    }
+                    // Stats for ruler
+                    ruler_stats = String(bi_diff) + ' bars';
+                    ruler_stats_price = pd_ + ' (' + pdp_ + '%)';
+                    // Markers
+                    co_ = (trendline_data.value <= cur_price) ? '#45CB85' : '#F45B69'
+                    ruler_start.setMarkers([
+                        {time: 0, position: 'inBar', color: co_, shape: 'circle', text: '', size: 1}
+                    ])
+                    // Add price stats at the top 
+                    ruler_top.setMarkers([
+                        {time: 0, position: 'aboveBar', color: '#ffffff', shape: 'circle', text: ruler_stats_price, size: 0}
+                    ]);
+                    // Clear bar distance stats at the bottom
+                    ruler_bot.setMarkers([
+                        {time: 0, position: 'belowBar', color: '#ffffff', shape: 'square', text: ruler_stats, size: 0}
+                    ]);
+                    // Change color of end point
+                    ruler_end.setMarkers([
+                        {time: 0, position: 'inBar', color: co_, shape: 'circle', text: '', size: 1}
+                    ]);
+                    // Change color of line
+                    trendline_.applyOptions({color: co_});
+                    // Set background fill
+                    ruler_fill.setData([
+                        {time: t1_, value: cur_price},
+                        {time: t2_, value: cur_price}
+                    ])
+                }
+            } catch {}
+        }
+    </script>
+
+    <script>
+        // 
+        function disconnectWebsocket() {
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    'instrument_id': {{asset.instrument_id}},
+                    'tf': '{{tf_name_etoro}}'
+                },
+                url: '/api/internal/wsc/remove',
+                error: function (jqXHR, textStatus, errorThrown) {},
+                success: function (data) {
+                    console.log(data)
+                }
+            })
+        }
+
+        // Chart
+        const chart = LightweightCharts.createChart(
+            document.getElementById('chart'), { 
+                width: 0, height: 0,
+                layout: {
+                    background: { color: '#201A23' },
+                    textColor: '#F7F9F9'
+                },
+                grid: {
+                    vertLines: { color: '#F7F9F915' },
+                    horzLines: { color: '#F7F9F915' }
+                },
+                crosshair: {
+                    mode: 0
+                }
+            }
+        );
+
+        // Format balance / price with commas
+        function formatBalance(val) {
+            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // When order cancel button is clicked
+        function orderOnCancel(socket_, this_) {
+            // Send message to ws
+            socket_.send(JSON.stringify({
+                't': 'co',
+                'd': {
+                    'iid': {{asset.instrument_id}},
+                    'id': $(this_).attr('data-order-id')
+                }
+            }))
+        }
+
+        // When position close button is clicked
+        function positionOnClose(socket_, this_) {
+            // Send message to ws
+            socket_.send(JSON.stringify({
+                't': 'clp',
+                'd': {
+                    'iid': {{asset.instrument_id}},
+                    'id': $(this_).attr('data-pos-id')
+                }
+            }))
+        }
+
+        Object.defineProperty(String.prototype, 'capitalize', {
+            value: function() {
+                return this.charAt(0).toUpperCase() + this.slice(1);
+            },
+            enumerable: false
+        });
+
+        var price_series = null;
+
+        var last_cur_param_time = null;
+
+        // Price data
+        let tv_price_data = {{tv_price_data | safe}};
+        
+        var price_data = [];
+
+        var from_date_ = null;
+
+        var is_market_open = false;
+
+        var last_cv = '';
+
+        var last_data_vol = null;
+
+        var last_update_was_new_bar = false;
+
+        $(window).on('load', function() {
+            // Websocket for account / trading updates
+            const socket_account = new WebSocket(
+                (location.protocol === 'https:' ? 'wss' : 'ws') + '://'
+                + window.location.host
+                + '/ws/account/'
+                + '{{user.id}}'
+            );
+
+            socket_account.onmessage = function(e) {
+                e = JSON.parse(e['data']);
+                
+                msg_type = null;
+                msg_text = null;
+
+                // If everything ok on server
+                if (e['s'] == 'ok') {
+                    // If an order was cancelled / rejected or filled
+                    if (e['t'] == 'co_') {
+                        msg_text = '';
+                        text_color = 'text';
+                        if (e['os'] == 'c') {
+                            msg_text = 'Order cancelled';
+                        } else if (e['os'] == 'r') {
+                            msg_text = 'Order rejected';
+                            text_color = 'red';
+                        } else if (e['os'] == 'f') {
+                            msg_text = 'Order filled';
+                            text_color = 'blue';
+
+                            // Create new position if order filled and was a Limit order
+                            if (e['d']['ot'] != undefined) {
+                                if (e['d']['ot'] == 'l') {
+                                    // Get size
+                                    order_size = formatBalance(e['d']['os']);
+                                    order_size += e['d']['ost'] == 't' ? '$' : '#';
+
+                                    // Add new position item
+                                    op0 = '';
+                                    if ($('.history').attr('data-value') == 'orders') {
+                                        op0 = 'op0';
+                                    }
+
+                                    // Build HTML
+                                    html_ = '<div class="fc position ' + op0 + '" data-dollar-size="' + e['d']['osdollar'] + '" data-calc-price="' + e['d']['calcp'] + '">';
+                                    html_ += '<img class="close cf-red" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -8px; right: -7px" data-pos-id="' + e['d']['pid'] + '">';
+                                    html_ += '<div class="fr jb mb10">';
+                                    html_ += '<div style="color: var(--text); opacity: 1; font-size: 12pt; background-color: var(--' + (e['d']['si'] == 'l' ? 'green' : 'red') + '); width: 18px; height: 18px; border-radius: 5px; text-align: center; font-weight: bold">' + (e['d']['si'] == 'l' ? 'L' : 'S') + '</div>';
+                                    html_ += '<div style="color: var(--orange); font-size: 10pt">' + order_size + '</div></div><div class="fr jb">';
+                                    
+                                    html_ += '<div style="color: var(--text); font-size: 10pt">' + e['d']['ep'] + '</div>';
+                                    html_ += '<div style="color: var(--orange); font-size: 10pt">' + e['d']['l'] + 'x</div></div>';
+
+                                    pnlp_ = Math.round(e['d']['pnl'] * 1000) / 1000;
+                                    pnl_ = Math.round(pnlp_ * e['d']['osdollar'] * 10) / 1000;
+                                    if (pnl_ == 0) {
+                                        pnl_ = Math.round(pnlp_ * e['d']['osdollar'] * 100) / 10000;
+                                    }
+                                    if (pnl_ == 0) {
+                                        pnl_ = Math.round(pnlp_ * e['d']['osdollar'] * 10000) / 1000000;
+                                    }
+                                    pnl_char = pnl_ >= 0 ? '+' : '';
+                                    html_ += '<div class="fr js mt10"><div style="color: var(--red); font-size: 10pt">' + pnl_char + String(pnl_) + '$ (' + pnl_char + String(pnlp_) + '%)</div></div>';
+
+                                    // Append
+                                    poss = $('.history-list .position');
+                                    if (poss.length > 0) {
+                                        $($(poss).get(0)).before(html_);
+                                    } else {
+                                        $('.history-list').append(html_);
+                                    }
+
+                                    // Add events for position
+                                    $('.position img[data-pos-id="' + e['d']['pid'] + '"]').on('click', function() {
+                                        positionOnClose(socket_account, this);
+                                    })
+
+                                    // Hide the no data message
+                                    $('.noordpos').addClass('op0');
+                                }
+                            }
+                        }
+
+                        order_id = e['d']['id'];
+                        el = $('.order img[data-order-id="' + order_id + '"]').parent();
+                        $(el).addClass('closed');
+
+                        status_el = $(el).find('> div:last-child > div:nth-child(1)');
+                        $(status_el).text(msg_text.split(' ')[1].capitalize()).css('color', 'var(--' + text_color + ')');
+
+                        $(el).find('img').remove();
+
+                        html_ = $(el).clone();
+                        el.remove();
+
+                        first_closed = $('.history-list .order.closed');
+                        if (first_closed.length > 0) {
+                            $(first_closed.get(0)).before(html_);
+                        } else {
+                            $('.history-list').append(html_);
+                        }
+                    } else if (e['t'] == 'o_') {  // a new order was created
+                        // Adding order
+                        msg_text = 'Order created';
+                        if (e['np']) {
+                            msg_text = 'Order created and resulted in new open position'
+                        }
+
+                        op0 = '';
+                        if ($('.history').attr('data-value') == 'positions') {
+                            op0 = 'op0';
+                        }
+
+                        html_ = '<div class="fc order ' + (e['d']['ors'] != 'p' ? 'closed' : '') + ' ' + op0 + '">';
+                        if (e['d']['ot'] == 'l' && e['d']['ors'] == 'p') {
+                            html_ += '<img class="close cf-red" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -8px; right: -7px" data-order-id="' + e['d']['oid'] + '">'
+                        }
+                        html_ += '<div class="fr jb mb10">';
+
+                        order_type_side = {
+                            'ml': 'Market Long',
+                            'ms': 'Market Short',
+                            'll': 'Limit Long',
+                            'ls': 'Limit Short'
+                        }[e['d']['ot'] + e['d']['si']];
+                        html_ += '<div style="font-size: 10pt">' + order_type_side + '</div>';
+
+                        html_ += '<div style="font-size: 10pt; color: var(--orange)">' + e['d'][e['d']['ot'] == 'l' ? 'opl' : 'opm'] + '</div>';
+                        html_ += '</div>';
+                        html_ += '<div class="fr jb">';
+
+                        order_status = {
+                            'p': 'Pending',
+                            'c': 'Cancelled',
+                            'r': 'Rejected',
+                            'f': 'Filled'
+                        }[e['d']['ors']];
+                        order_status_color = {
+                            'p': 'text',
+                            'c': 'text',
+                            'r': 'red',
+                            'f': 'blue'
+                        }[e['d']['ors']];
+                        order_status_css = 'color: var(--' + order_status_color + ')';
+                        html_ += '<div style="font-size: 10pt; ' + order_status_css + '">' + order_status + '</div>';
+
+                        order_size = formatBalance(e['d']['os']);
+                        order_size += e['d']['ost'] == 't' ? '$' : '#';
+                        html_ += '<div style="color: var(--orange); font-size: 10pt">' + order_size + '</div></div></div>';
+
+                        if (e['d']['ors'] == 'p') {
+                            $('.history-list').prepend(html_);
+                        } else {
+                            poss = $('.history-list .order.closed');
+                            if (poss.length > 0) {
+                                $($(poss).get(0)).before(html_);
+                            } else {
+                                $('.history-list').append(html_);
+                            }
+                        }
+
+                        // Add events for order
+                        $('.order img[data-order-id="' + e['d']['oid'] + '"]').on('click', function() {
+                            orderOnCancel(socket_account, this);
+                        })
+
+                        // Adding position (if order was Market and market was open)
+                        if (e['np']) {
+                            op0 = '';
+                            if ($('.history').attr('data-value') == 'orders') {
+                                op0 = 'op0';
+                            }
+                            // Build HTML
+                            html_ = '<div class="fc position ' + op0 + '" data-dollar-size="' + e['d']['osdollar'] + '" data-calc-price="' + e['d']['calcp'] + '">';
+                            html_ += '<img class="close cf-red" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -8px; right: -7px" data-pos-id="' + e['d']['pid'] + '">';
+                            html_ += '<div class="fr jb mb10">';
+                            html_ += '<div style="color: var(--text); opacity: 1; font-size: 12pt; background-color: var(--' + (e['d']['si'] == 'l' ? 'green' : 'red') + '); width: 18px; height: 18px; border-radius: 5px; text-align: center; font-weight: bold">' + (e['d']['si'] == 'l' ? 'L' : 'S') + '</div>';
+                            html_ += '<div style="color: var(--orange); font-size: 10pt">' + order_size + '</div></div><div class="fr jb">';
+                            
+                            html_ += '<div style="color: var(--text); font-size: 10pt">' + e['d']['ep'] + '</div>';
+                            html_ += '<div style="color: var(--orange); font-size: 10pt">' + e['d']['l'] + 'x</div></div>';
+
+                            pnlp_ = Math.round(e['d']['pnl'] * 1000) / 1000;
+                            pnl_ = Math.round(pnlp_ * e['d']['osdollar'] * 10) / 1000;
+                            if (pnl_ == 0) {
+                                pnl_ = Math.round(pnlp_ * e['d']['osdollar'] * 100) / 10000;
+                            }
+                            if (pnl_ == 0) {
+                                pnl_ = Math.round(pnlp_ * e['d']['osdollar'] * 10000) / 1000000;
+                            }
+                            pnl_char = pnl_ >= 0 ? '+' : '';
+                            html_ += '<div class="fr js mt10"><div style="color: var(--red); font-size: 10pt">' + pnl_char + String(pnl_) + '$ (' + pnl_char + String(pnlp_) + '%)</div></div>';
+                            // Append
+                            poss = $('.history-list .position');
+                            if (poss.length > 0) {
+                                $($(poss).get(0)).before(html_);
+                            } else {
+                                $('.history-list').append(html_);
+                            }
+
+                            // Add events for position
+                            $('.position img[data-pos-id="' + e['d']['pid'] + '"]').on('click', function() {
+                                positionOnClose(socket_account, this);
+                            })
+
+                            // Hide the no data message
+                            $('.noordpos').addClass('op0');
+
+                            // Update user's balance and total PnL
+                            if (e['user'] != undefined) {
+                                user_bal_ = formatBalance(e['user']['b']);
+                                user_tot_pnl_ = e['user']['pnl'];
+                                var_ = ' <span style="color: var(--' + (user_tot_pnl_ >= 0 ? 'green' : 'red') + ')">(' + (user_tot_pnl_ >= 0 ? '+' : '') + String(user_tot_pnl_) + '$)</span>';
+                                user_bal_html_ = user_bal_ + '$' + (user_tot_pnl_ != 0 ? var_ : '');
+                                $('#user_balance').html(user_bal_html_);
+                                user_balance = e['user']['b'];
+                            }
+                        } else {
+                            // If we are not creating a position -> only hide no data message for orders
+                            if ($('.history').attr('data-value') == 'orders') {
+                                $('.noordpos').addClass('op0');
+                            }
+                        }
+                    } else if (e['t'] == 'clp_') {  // position closed
+                        msg_text = 'Position closed';
+
+                        pos_id = e['d']['id'];
+                        el = $('.position img[data-pos-id="' + pos_id + '"]').parent();
+                        $(el).addClass('closed');
+                        $(el).find('img').remove();
+
+                        status_el = $(el).find('> div:first-child > div:first-child');
+
+                        html_ = $(el).clone();
+                        el.remove();
+
+                        first_closed = $('.history-list .position.closed');
+                        if (first_closed.length > 0) {
+                            $($(first_closed).get(0)).before(html_);
+                        } else {
+                            $('.history-list').append(html_);
+                        }
+
+                        // Update user's balance and total PnL
+                        if (e['user'] != undefined) {
+                            user_bal_ = formatBalance(e['user']['b']);
+                            user_tot_pnl_ = e['user']['pnl'];
+                            var_ = ' <span style="color: var(--' + (user_tot_pnl_ >= 0 ? 'green' : 'red') + ')">(' + (user_tot_pnl_ >= 0 ? '+' : '') + String(user_tot_pnl_) + '$)</span>';
+                            user_bal_html_ = user_bal_ + '$' + (user_tot_pnl_ != 0 ? var_ : '');
+                            $('#user_balance').html(user_bal_html_);
+                            user_balance = e['user']['b'];
+                        }
+                    } else if (e['t'] == 'bal_') {  // balance update
+                        // Update balance
+                        bal_ = Math.round((e['b']) * 100) / 100;
+                        if (bal_ == 0) {
+                            bal_ = Math.round(e['b'] * 1000) / 1000;
+                        }
+                        if (bal_ == 0) {
+                            bal_ = Math.round(e['b'] * 1000000) / 1000000;
+                        }
+                        user_bal_ = formatBalance(bal_);
+                        user_tot_pnl_ = Math.round(e['pnlo'] * 100) / 100;
+                        var_ = ' <span style="color: var(--' + (user_tot_pnl_ >= 0 ? 'green' : 'red') + ')">(' + (user_tot_pnl_ >= 0 ? '+' : '') + String(user_tot_pnl_) + '$)</span>';
+                        user_bal_html_ = user_bal_ + '$' + (user_tot_pnl_ != 0 ? var_ : '');
+                        $('#user_balance').html(user_bal_html_);
+                        user_balance = e['b'];
+                    }
+
+                    msg_type = 'msg';
+                } else {  // error occurred
+                    if (e['s'] != undefined) {
+                        msg_type = 'msg_err';
+                        msg_text = e['m'];
+                    }
+                }
+
+                if (msg_text) {
+                    // Show error message
+                    id_ = 'msg_' + String(Math.round(Date.now()));
+                    el = document.createElement("div");
+                    el.id = id_;
+                    document.body.appendChild(el);
+                    el.onclick = function() {
+                        $(this).stop().fadeOut(50, function() {
+                            $(this).remove();
+                        })
+                    }
+                    $('#' + id_).addClass(msg_type).text(msg_text);
+                    // Display message duration depending on length of message, but not more than 8s, and not less than 1.5s
+                    msg_dur = Math.max(1500, Math.min(msg_text.length * 40, 8000));
+                    // Make it dissappear after time
+                    $('#' + id_).delay(msg_dur).fadeOut(500, function() {
+                        $('#' + id_).remove();
+                    })
+                }
+            }
+
+            socket_account.onclose = function(e) {
+                console.log('Account websocket closed!')
+            };
+
+            // Events for order cancel buttons
+            $('.order .close').each(function(i, el) {
+                el.onclick = function() {
+                    orderOnCancel(socket_account, el);
+                }
+            })
+
+            // Events for position close buttons
+            $('.position .close').each(function(i, el) {
+                el.onclick = function() {
+                    positionOnClose(socket_account, el);
+                }
+            })
+
+
+            // Websocket
+            const socket_iid = new WebSocket(
+                (location.protocol === 'https:' ? 'wss' : 'ws') + '://'
+                + window.location.host
+                + '/ws/updates/'
+                + '{{asset.instrument_id}}'
+            );
+
+            socket_iid.onmessage = function(e) {
+                e = JSON.parse(e['data']);
+
+                // Price data update
+                if (price_data.length > 0) {
+                    if (e['t'] == 'p') {
+                        // Update Bid and Ask prices
+                        mrk = Math.pow(10, {{asset.precision}});
+
+                        ask_price_ = e['d']['a'];
+                        bid_price_ = e['d']['b'];
+
+                        a_ = Math.round(ask_price_ * mrk) / mrk;
+                        b_ = Math.round(bid_price_ * mrk) / mrk;
+
+                        $('#trading .prices > div:nth-child(1)').text(a_);
+                        $('#trading .prices > div:nth-child(2)').text(b_);
+
+                        // Update PnL of open positions
+                        $('.position:not(.closed)').each(function(i, el) {
+                            // Get if the position is Long/Short
+                            side_ = $($(el).find('div').get(0)).find('div:first-child').text();
+                            // Position size in USD
+                            psdollar = parseFloat($(el).attr('data-dollar-size'));  
+                            // Entry price of position (the one used for calculations)
+                            calc_price_ = parseFloat($(el).attr('data-calc-price'));
+                            // Calculate PnL (in %)
+                            pnl_perc = ((side_ == 'L' ? (bid_price_ / calc_price_) : (calc_price_ / ask_price_)) - 1) * 100;
+                            // Round PnL (%)
+                            pnlp_ = Math.round(pnl_perc * 1000) / 1000;
+                            // Calculate PnL in USD
+                            pnl_ = Math.round(pnlp_ * psdollar * 10) / 1000;
+                            // Rounding
+                            if (pnl_ == 0) {
+                                pnl_ = Math.round(pnlp_ * psdollar * 100) / 10000;
+                            }
+                            if (pnl_ == 0) {
+                                pnl_ = Math.round(pnlp_ * psdollar * 10000) / 1000000;
+                            }
+                            // '+' or '' depending on whether PnL > 0 or < 0
+                            pnl_char = pnl_ >= 0 ? '+' : '';
+                            // Update UI
+                            pnl_string = pnl_char + String(pnl_) + '$ (' + pnl_char + String(pnlp_) + '%)';
+                            $(el).find('> div:last-child > div:first-child').text(pnl_string).css('color', 'var(--' + (pnl_ >= 0 ? 'green' : 'red') + ')');
+                        })
+                    } else if (e['t'] == 'm') {
+                        if (e['d']['mo']) {
+                            $('.asset_name .dot').css('background-color', 'var(--green)');
+                            $('.asset_name .dot > div').text('Market open');
+                            $('#trading').removeClass('disabled');
+                        } else {
+                            $('.asset_name .dot').css('background-color', 'var(--black-hover-hover)');
+                            $('.asset_name .dot > div').text('Market closed');
+                            if ($('select[name="order_type"] option:selected').attr('value') == 'market') {
+                                $('#trading').addClass('disabled');
+                            }
+                        }
+                    } 
+                 }
+            };
+
+            socket_iid.onclose = function(e) {
+                console.log('Asset websocket closed!')
+            };
+
+
+
+            // Websocket
+            const socket = new WebSocket(
+                (location.protocol === 'https:' ? 'wss' : 'ws') + '://'
+                + window.location.host
+                + '/ws/updates/'
+                + '{{asset.instrument_id}}/'
+                + '{{tf_name_etoro}}'
+            );
+
+            socket.onmessage = function(e) {
+                e = JSON.parse(e['data']);
+
+                // Price data update
+                if (price_data.length > 0) {
+                    if (e['t'] == 'ohlc') {
+                        if (last_update_was_new_bar) {
+                            last_update_was_new_bar = false;
+                        }
+                        last_price_data = price_data[price_data.length - 1];
+                        if (price_series) {
+                            time_ = last_price_data.time;
+                            time_now_ = Math.round(Date.now() / 1000);
+                            // In case we have a new bar
+                            ser_upd = false;
+                            if (from_date_ != null && from_date_ != e['d']['t']) {
+                                time_ = time_now_;
+                                ser_upd = true;
+                                last_update_was_new_bar = true;
+                            } 
+                            upd_ = {
+                                time: time_,
+                                open: e['d']['o'],
+                                high: e['d']['h'],
+                                low: e['d']['l'],
+                                close: e['d']['c']
+                            };
+                            // Update data
+                            if (ser_upd) {
+                                upd_['volume'] = 0
+                                price_data.push(upd_);
+                            } else {
+                                upd_['volume'] = last_price_data['volume']
+                                price_data[price_data.length - 1] = upd_;
+                            }
+                            // Update series
+                            price_series.update(upd_);
+                            // To check if we add new bar or update last
+                            from_date_ = e['d']['t'];
+                            // Reload MA Ribbon
+                            if (ribbon_ma) {
+                                for (const cs of ribbon_ma['data']) {
+                                    chart.removeSeries(cs);
+                                }
+                                ribbon_ma = null;
+                                ribbon_ma = init_MA_Ribbon(true);
+                            }
+                            // Reload MACD
+                            if (macd_) {
+                                for (const cs of macd_['data']) {
+                                    chart.removeSeries(cs);
+                                }
+                                macd_ = null;
+                                macd_ = init_MACD(true);
+                            }
+                            // Reload RSI
+                            if (rsi) {
+                                for (const cs of rsi['data']) {
+                                    chart.removeSeries(cs);
+                                }
+                                rsi = null;
+                                rsi = init_RSI(true);
+                            }
+                            resizePriceScales(chart);
+                        }
+                    } else if (e['t'] == 'v') {  // Volume update
+                        data_vol = e['d'];
+                        cur_vol = price_data[price_data.length - 1]['volume'];
+                        price_data[price_data.length - 1]['volume'] = Math.max(cur_vol, data_vol);
+                        // Reload Volume
+                        if (vol_) {
+                            for (const cs of vol_['data']) {
+                                chart.removeSeries(cs);
+                            }
+                            vol_ = null;
+                            vol_ = init_VOL();
+                        }
+                        resizePriceScales(chart);
+                    }
+                }
+            };
+
+            window.onbeforeunload = function(){
+                disconnectWebsocket();
+            };
+
+            socket.onclose = function(e) {
+                console.log('Asset and timeframe websocket closed!')
+                disconnectWebsocket();
+            };
+
+            socket.onopen = function(e) {
+                console.log('Connected!')
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        'instrument_id': {{asset.instrument_id}},
+                        'tf': '{{tf_name_etoro}}',
+                        'asset': '{{asset.asset}}'
+                    },
+                    url: '/api/internal/wsc/add',
+                    error: function (jqXHR, textStatus, errorThrown) {},
+                    success: function (data) {
+                        console.log(data)
+                    }
+                })
+            }
+
+
+            // On click of Long / Short
+            $('#trading .btns > div').on('click', function() {
+                // Is it Long or Short
+                side = $(this).hasClass('long') ? 'l' : 's';
+                // Leverage
+                leverage = $('#trading input[name="leverage"]').val();
+                // Order type
+                order_type = $('#trading select[name="order_type"] > option:selected').attr('value');
+                order_type = order_type == 'market' ? 'm' : 'l';
+                // Order size
+                order_size_type = $('#trading .order_size > div').attr('data-type');
+                order_size_type = order_size_type == 'total' ? 't' : 'a';
+                order_size = parseFloat(replaceAll($('#trading .order_size > input').val(), ',', ''));
+                // Order price (limit)
+                order_price_limit = parseFloat($('#trading .order_price input').val());
+                // Order price (market)
+                order_price_market = parseFloat($('#trading .prices > div:nth-child(2)').text())
+                // Order price (real)
+                order_price_calc = parseFloat($('#trading .prices > div:nth-child(' + (side == 'l' ? '1' : '2') + ')').text())
+                // Send message to websocket
+                socket_account.send(JSON.stringify({
+                    't': 'o',
+                    'd': {
+                        'a': '{{asset.asset}}',
+                        'iid': '{{asset.instrument_id}}',
+                        'si': side,
+                        'l': leverage,
+                        'ot': order_type,
+                        'ost': order_size_type,
+                        'os': order_size,
+                        'opl': order_price_limit,
+                        'opm': order_price_market,
+                        'opc': order_price_calc
+                    }
+                }))
+            })
+
+
+            // Load candles
+            $.ajax({
+                type: 'GET',
+                dataType: 'jsonp',
+                tryCount: 0,
+                retryLimit: 10,
+                url: 'https://candle.etoro.com/candles/desc.json/{{tf_name_etoro}}/1000/{{asset.instrument_id}}?client_request_id=1f4b6ca6-b84f-45d2-af4a-53913d6c911b',
+                error: function (jqXHR, textStatus, errorThrown) {
+                    this.tryCount++;
+                    if (this.tryCount <= this.retryLimit) {
+                        $.ajax(this);
+                    }            
+                },
+                success: function (data) {
+                    // Transform data from eToro
+                    price_data_td = 1000000000;
+                    candles = data['Candles'][0]['Candles'];
+                    if (candles.length == 0) {
+                        window.location = '/chart/{{asset.id}}_{{asset.asset}}?tf=1D';
+                    }
+                    for (i = candles.length - 1; i >= 0; i--) {
+                        ts_ = Date.parse(candles[i]['FromDate']) / 1000;
+                        if (price_data.length > 0) {
+                            price_data_td = Math.min(price_data_td, Math.abs(ts_ - price_data[price_data.length - 1].time));
+                        }
+                        price_data.push({
+                            time: ts_,
+                            open: candles[i]['Open'],
+                            high: candles[i]['High'],
+                            low: candles[i]['Low'],
+                            close: candles[i]['Close'],
+                            volume: 0
+                        })
+                    }
+
+                    // Combine TV's Volume data with eToro's price data
+                    tv_dates = [];
+                    for (i = 0; i < price_data.length; i++) { 
+                        etoro_date = new Date(price_data[i].time * 1000);
+                        // eToro date string
+                        etd = String(etoro_date.getUTCDate());
+                        etm = String(etoro_date.getUTCMonth());
+                        ety = String(etoro_date.getUTCFullYear());
+                        etmi = String(etoro_date.getMinutes());
+                        etho = String(etoro_date.getHours());
+                        et_date = ety + '_' + etm + '_' + etd + '_' + etho + '_' + etmi;
+                        // 
+                        for (j = 0; j < tv_price_data.length; j++) {
+                            tv_date = null;
+                            // Get TV's date
+                            if (j > tv_dates.length - 1) {
+                                tv_date = new Date(tv_price_data[j].time * 1000);
+                                tvd = String(etoro_date.getUTCDate());
+                                tvm = String(etoro_date.getUTCMonth());
+                                tvy = String(etoro_date.getUTCFullYear());
+                                tvmi = String(etoro_date.getMinutes());
+                                tvho = String(etoro_date.getHours());
+                                tv_date = tvy + '_' + tvm + '_' + tvd + '_' + tvho + '_' + tvmi;
+                                tv_dates.push(tv_date);
+                            } else {    
+                                tv_date = tv_dates[j];
+                            }
+
+                            // Compare dates
+                            if (tv_date == et_date) {
+                                price_data[i].volume = tv_price_data[j].volume;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check if last available data for symbol is too far
+                    if (price_data.length > 0) {
+                        console.log(price_data[price_data.length - 1].time)
+                        console.log(Date.now() / 1000)
+                        console.log(Date.now() / 1000 -price_data[price_data.length - 1].time )
+                        console.log(7 * 24 * 3600)
+
+                        if (Date.now() - price_data[price_data.length - 1].time >= 7 * 24 * 3600) {
+                            $.ajax({
+                                url: '/api/internal/invalidate_asset',
+                                type: "POST",
+                                dataType: 'json',
+                                data: {
+                                    'iid': {{asset.instrument_id}},
+                                    'lp': price_data[price_data.length - 1].time,
+                                    'reason': 'Last available data too far in history'
+                                },
+                                success: (data) => {
+                                    if (data['status'] == 'ok') {
+                                        alert('This asset has no recent price data updates. We deactivated trading for this asset and will inform the administrator. Press OK to proceed...');
+                                        window.location = $('img.btn-exit').attr('onclick').replace('window.location=', '').slice(1, -1);
+                                    }
+                                },
+                                error: (error) => {
+                                    console.log(error);
+                                }
+                            });
+                        }
+                    }
+                    
+                    // Get time difference between two bars (we search for min time because sometimes the time between bars can be different due to lack of data or weekends)
+                    for (i = 1; i < price_data.length; i++) {
+                        btd = price_data[i].time - price_data[i - 1].time;
+                        if (btd < bartime_diff) {
+                            bartime_diff = btd;
+                        }
+                    }
+
+                    // Draw price 
+                    price_series = chart.addCandlestickSeries({ 
+                        upColor: '#45CB85', 
+                        downColor: '#F45B69', 
+                        borderVisible: false, 
+                        wickUpColor: '#45CB85', 
+                        wickDownColor: '#F45B69',
+                        priceFormat: {type: 'price', precision: price_k, minMove: Math.pow(10, -price_k)}
+                    });
+                    price_series.setData(price_data);
+
+                    chart.timeScale().applyOptions({
+                        timeVisible: true
+                    })
+
+                    chart.timeScale().fitContent()
+
+                    // Set margins for right price scale
+                    chart.priceScale('right').applyOptions({
+                        scaleMargins: {
+                            top: 0.02,
+                            bottom: 0.54,
+                        },
+                        visible: true,
+                        autoScale: true
+                    })  
+
+                    // -- INITIAL SETUP -- 
+                    // ----------------------------
+                    // - VRVP
+                    window.vrvp = {% if chart.settings.indicators.vrvp.on %} init_VRVP() {% else %} null {% endif %};
+                    window.vrvp_nrows = {% if chart.settings.indicators.vrvp.on %} {{chart.settings.indicators.vrvp.settings.nrows}} {% else %} 20 {% endif %}
+                    window.vrvp_width = {% if chart.settings.indicators.vrvp.on %} {{chart.settings.indicators.vrvp.settings.width}} {% else %} 25 {% endif %}
+                    window.vrvp_type = {% if chart.settings.indicators.vrvp.on %} '{{chart.settings.indicators.vrvp.settings.type}}' {% else %} 'bs' {% endif %}
+                    window.vrvp_px_data = [];
+                    window.vrvp_visible = true;
+                    // Hide or show it
+                    visibilityOnClick_VRVP($('#ind-vrvp .visibility'), {% if chart.settings.indicators.vrvp.vis %} 1 {% else %} -1 {% endif %});
+                    // Change default values of settings
+                    {% if chart.settings.indicators.vrvp.on %}
+                        // Nrows
+                        $('#ind-vrvp .inputs .inps input[name="nrows"]').attr('value', '{{chart.settings.indicators.vrvp.settings.nrows}}');
+                        $('#ind-vrvp .inputs .last-inps input[name="nrows"]').attr('value', '{{chart.settings.indicators.vrvp.settings.nrows}}');
+                        // Type
+                        $('#ind-vrvp .inputs .inps select > option').removeAttr('selected');
+                        $('#ind-vrvp .inputs .inps select > option[value="{{chart.settings.indicators.vrvp.settings.type}}"]').attr('selected', 'selected');
+                        $('#ind-vrvp .inputs .last-inps select > option').removeAttr('selected');
+                        $('#ind-vrvp .inputs .last-inps select > option[value="{{chart.settings.indicators.vrvp.settings.type}}"]').attr('selected', 'selected');
+                        // Width
+                        $('#ind-vrvp .inputs .inps input[name="width"]').attr('value', '{{chart.settings.indicators.vrvp.settings.width}}');
+                        $('#ind-vrvp .inputs .last-inps input[name="width"]').attr('value', '{{chart.settings.indicators.vrvp.settings.width}}');
+                    {% endif %}
+
+                    // ----------------------------
+                    // - MA Ribbon
+                    {% if chart.settings.indicators.ma_ribbon.on %}
+                        $('#ind-ma-ribbon .inputs .inps .period').remove();
+                        {% for i in chart.settings.indicators.ma_ribbon.settings %}
+                            st_MA_Ribbon_add($('.btn-add-ma-ribbon-row'));
+                            // Source
+                            $('#ind-ma-ribbon .inputs .inps .period:nth-child({{forloop.counter}}) select[name="source"] > option').removeAttr('selected');
+                            $('#ind-ma-ribbon .inputs .inps .period:nth-child({{forloop.counter}}) select[name="source"] > option[value="{{i.source}}"]').attr('selected', 'selected');
+                            // Type
+                            $('#ind-ma-ribbon .inputs .inps .period:nth-child({{forloop.counter}}) select[name="type"] > option').removeAttr('selected');
+                            $('#ind-ma-ribbon .inputs .inps .period:nth-child({{forloop.counter}}) select[name="type"] > option[value="{{i.type}}"]').attr('selected', 'selected');
+                            // Period
+                            $('#ind-ma-ribbon .inputs .inps .period:nth-child({{forloop.counter}}) input').attr('value', {{i.period}});
+                        {% endfor %}
+                        $('#ind-ma-ribbon .inputs .last-inps').html($('#ind-ma-ribbon .inputs .inps').html());
+                    {% endif %}
+
+                    ribbon_ma = {% if chart.settings.indicators.ma_ribbon.on %} init_MA_Ribbon() {% else %} null {% endif %};
+
+                    // ----------------------------
+                    // - Volume
+                    vol_ = {% if chart.settings.indicators.vol.on %} init_VOL() {% else %} null {% endif %};
+
+                    // ----------------------------
+                    // - MACD
+                    {% if chart.settings.indicators.macd.on %}
+                        // Source
+                        $('#ind-macd .inputs .inps select[name="source"] > option').removeAttr('selected');
+                        $('#ind-macd .inputs .inps select[name="source"] > option[value="{{chart.settings.indicators.macd.settings.source}}"]').attr('selected', 'selected');
+                        $('#ind-macd .inputs .last-inps select[name="source"] > option').removeAttr('selected');
+                        $('#ind-macd .inputs .last-inps select[name="source"] > option[value="{{chart.settings.indicators.macd.settings.source}}"]').attr('selected', 'selected');
+                        // Type
+                        $('#ind-macd .inputs .inps select[name="type"] > option').removeAttr('selected');
+                        $('#ind-macd .inputs .inps select[name="type"] > option[value="{{chart.settings.indicators.macd.settings.type}}"]').attr('selected', 'selected');
+                        $('#ind-macd .inputs .last-inps select[name="type"] > option').removeAttr('selected');
+                        $('#ind-macd .inputs .last-inps select[name="type"] > option[value="{{chart.settings.indicators.macd.settings.type}}"]').attr('selected', 'selected');
+                        // Fast length
+                        $('#ind-macd .inputs .inps input[name="fast_len"]').attr('value', '{{chart.settings.indicators.macd.settings.fast_len}}');
+                        $('#ind-macd .inputs .last-inps input[name="fast_len"]').attr('value', '{{chart.settings.indicators.macd.settings.fast_len}}');
+                        // Slow length
+                        $('#ind-macd .inputs .inps input[name="slow_len"]').attr('value', '{{chart.settings.indicators.macd.settings.slow_len}}');
+                        $('#ind-macd .inputs .last-inps input[name="slow_len"]').attr('value', '{{chart.settings.indicators.macd.settings.slow_len}}');
+                        // Signal length
+                        $('#ind-macd .inputs .inps input[name="sig_len"]').attr('value', '{{chart.settings.indicators.macd.settings.sig_len}}');
+                        $('#ind-macd .inputs .last-inps input[name="sig_len"]').attr('value', '{{chart.settings.indicators.macd.settings.sig_len}}');
+                    {% endif %}
+                    macd_ = {% if chart.settings.indicators.macd.on %} init_MACD() {% else %} null {% endif %};
+
+                    // ----------------------------
+                    // - RSI
+                    {% if chart.settings.indicators.rsi.on %}
+                        // Source
+                        $('#ind-rsi .inputs .inps select[name="source"] > option').removeAttr('selected');
+                        $('#ind-rsi .inputs .inps select[name="source"] > option[value="{{chart.settings.indicators.rsi.settings.source}}"]').attr('selected', 'selected');
+                        $('#ind-rsi .inputs .last-inps select[name="source"] > option').removeAttr('selected');
+                        $('#ind-rsi .inputs .last-inps select[name="source"] > option[value="{{chart.settings.indicators.rsi.settings.source}}"]').attr('selected', 'selected');
+                        // Period
+                        $('#ind-rsi .inputs .inps input').attr('value', '{{chart.settings.indicators.rsi.settings.period}}');
+                        $('#ind-rsi .inputs .last-inps input').attr('value', '{{chart.settings.indicators.rsi.settings.period}}');
+                    {% endif %}
+                    rsi = {% if chart.settings.indicators.rsi.on %} init_RSI() {% else %} null {% endif %};
+
+                    visibilityOnClick($('#ind-ma-ribbon .visibility'), ribbon_ma, {% if chart.settings.indicators.ma_ribbon.vis %} 1 {% else %} -1 {% endif %});
+                    visibilityOnClick($('#ind-vol .visibility'), vol_, {% if chart.settings.indicators.vol.vis %} 1 {% else %} -1 {% endif %});
+                    visibilityOnClick($('#ind-macd .visibility'), macd_, {% if chart.settings.indicators.macd.vis %} 1 {% else %} -1 {% endif %});
+                    visibilityOnClick($('#ind-rsi .visibility'), rsi, {% if chart.settings.indicators.rsi.vis %} 1 {% else %} -1 {% endif %});
+
+                    // Resize price scales
+                    resizePriceScales(chart);
+
+                    // ----------------------------
+                    // -- INITIAL SETUP --
+
+                    // 
+                    setTimeout(function() {
+                        // Get width of price scale
+                        rpsw = $('#chart table tr:nth-child(1) td:nth-child(3)').width() - 4;
+                        // Set width of separators between indicators
+                        $('.sep').css('width', 'calc(100% - ' + String(rpsw) + 'px)');
+                        // Set margin for indicators' tooltip 
+                        $('.ind-tooltip > div').css('margin-right', String(rpsw + 20 + 250) + 'px');
+                    }, 100)
+
+                    // Chart element
+                    container = document.getElementById('chart');
+
+                    // Subscribe to mouse click event
+                    chart.subscribeClick(param => {
+                        // Get max and min price of price scale
+                        plimits = getPriceLimits();
+                        pldiff = plimits[0] - plimits[1];
+
+                        // Brush 
+                        if (draw_mode == 'brush') {
+                            if (cur_param.time != undefined) {
+                                mouse_down = !mouse_down;
+                                if (!brush_init_point) {
+                                    bs_ = chart._private__chartWidget._private__paneWidgets[0]._private__state._private__model._private__timeScale._private__barSpacing;
+                                    brush_init_point = {time: param.time, value: cur_price, x: param.point.x, y: param.point.y, xk: bs_, xy: pldiff};
+                                } else {
+                                    // Marker
+                                    ms1 = getPointSeries(chart);
+                                    ms1.setData([{time: brush_init_point.time, value: brush_init_point.value}]);
+                                    // Add to drawings
+                                    drawings.push({
+                                        'type': 'brush', 'init_point': brush_init_point, 
+                                        'data': brush_data,
+                                        'id': Math.round(Date.now()),
+                                        'selected': false,
+                                        'color': '#26a69aa5',
+                                        'visible': true,
+                                        'style': 2,
+                                        'width': 2
+                                    });
+                                    // Reset 
+                                    brush_init_point = null;
+                                    brush_data = [];
+                                }
+                            }
+                        }
+
+                        if (!param.point) {
+                            return;
+                        } else {
+                            // Get current time range
+                            time_range = chart.timeScale().getVisibleRange();
+
+                            // Get current bar range
+                            bar_range = chart.timeScale().getVisibleLogicalRange();
+
+                            // Get current price
+                            cur_price = getCurrentPrice();
+
+                            // If clicked in ruler mode
+                            if (draw_mode == 'ruler') {
+                                if (!trendline_) {
+                                    if (cur_param.time != undefined) {
+                                        // Add line
+                                        trendline_ = chart.addLineSeries({color: '#5C7AFFA5', lineWidth: 2, lineStyle: 2, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false});
+                                        trendline_data = {time: param.time, value: cur_price, bi: chart.timeScale().coordinateToLogical(chart.timeScale().timeToCoordinate(param.time))};
+                                        trendline_.setData([trendline_data]);
+                                        trendline_.artificial = true;
+                                        // Add background fill
+                                        ruler_fill = chart.addBaselineSeries({ baseValue: { type: 'price', price: cur_price }, topLineColor: '#45CB85A5', topFillColor1: '#45CB85A5', topFillColor2: '#45CB85A5', bottomLineColor: '#F45B69A5', bottomFillColor1: '#F45B69A5', bottomFillColor2: '#F45B69A5' });
+                                        // Add start and end points
+                                        ruler_start = chart.addLineSeries({color: 'transparent', lineWidth: 0, lineStyle: 2, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false});
+                                        ruler_start.setMarkers([
+                                            {time: 0, position: 'inBar', color: '#5C7AFF', shape: 'circle', text: '', size: 1}
+                                        ])
+                                        ruler_end = chart.addLineSeries({color: 'transparent', lineWidth: 0, lineStyle: 2, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false});
+                                        ruler_end.setMarkers([
+                                            {time: 0, position: 'inBar', color: '#5C7AFF', shape: 'circle', text: '', size: 1}
+                                        ]);
+                                        ruler_bot = chart.addLineSeries({color: 'transparent', lineWidth: 0, lineStyle: 2, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false});
+                                        ruler_top = chart.addLineSeries({color: 'transparent', lineWidth: 0, lineStyle: 2, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false});
+                                        // Set time and price of first point
+                                        trendline_price1 = cur_price;
+                                        trendline_time1 = param.time;
+                                        // Add interval
+                                        window.trendline_interval = setInterval(function() {interval_secondPoint();}, 50);
+                                    }
+                                } else {
+                                    // Remove drawings
+                                    chart.removeSeries(trendline_);
+                                    chart.removeSeries(ruler_fill);
+                                    chart.removeSeries(ruler_start);
+                                    chart.removeSeries(ruler_end);
+                                    chart.removeSeries(ruler_bot);
+                                    chart.removeSeries(ruler_top);
+                                    // Reset variables
+                                    trendline_ = null;
+                                    trendline_data = null;
+                                    ruler_fill = null;
+                                    ruler_start = null;
+                                    ruler_end = null;
+                                    ruler_bot = null;
+                                    ruler_top = null;
+                                    trendline_price1 = null;
+                                    trendline_time1 = null;
+                                    // Reset interval
+                                    clearInterval(window.trendline_interval);   
+                                }
+                            }
+
+                            // If clicked on a drawing in cursor mode
+                            if (draw_mode == 'cursor') {
+                                dlll_ = drawings.length;
+                                no_shift = !event.shiftKey;
+                                already_selected = false;
+                                for (i = 0; i < dlll_; i++) {
+                                    drawing = drawings[i];
+                                    if (drawing.type == 'vline') {
+                                        if (!already_selected) {
+                                            if (testVLine(drawing.time, param.time, time_range, container.clientWidth)) {
+                                                selectDrawing(drawing, !drawing.selected);
+                                                already_selected = true;
+                                            } else {
+                                                if (no_shift) {selectDrawing(drawing, false);}
+                                            }
+                                        } else {
+                                            if (no_shift) {selectDrawing(drawing, false);}
+                                        }
+                                    } else if (drawing.type == 'hline') {
+                                        if (!already_selected) {
+                                            if (testHLine(drawing.price, cur_price, pldiff)) {
+                                                selectDrawing(drawing, !drawing.selected);
+                                                already_selected = true;
+                                            } else {
+                                                if (no_shift) {selectDrawing(drawing, false);}
+                                            }
+                                        } else {
+                                            if (no_shift) {selectDrawing(drawing, false);}
+                                        }
+                                    } else if (drawing.type == 'trendline') {
+                                        if (!already_selected) {
+                                            if (testTrendLine(drawing.time1, drawing.price1, drawing.time2, drawing.price2, param.time, cur_price, bar_range)) {
+                                                selectDrawing(drawing, !drawing.selected);
+                                                already_selected = true;
+                                            } else {
+                                                if (no_shift) {selectDrawing(drawing, false);}
+                                            }
+                                        } else {
+                                            if (no_shift) {selectDrawing(drawing, false);}
+                                        }
+                                    } else if (drawing.type == 'fibret') {
+                                        if (!already_selected) {
+                                            if (testTrendLine(drawing.time1, drawing.price1, drawing.time2, drawing.price2, param.time, cur_price, bar_range)) {
+                                                selectDrawing(drawing, !drawing.selected);
+                                                already_selected = true;
+                                            } else {
+                                                if (no_shift) {selectDrawing(drawing, false);}
+                                            }
+                                        } else {
+                                            if (no_shift) {selectDrawing(drawing, false);}
+                                        }
+                                    } else if (drawing.type == 'brush') {
+                                        if (!already_selected) {
+                                            if (testBrush(drawing.init_point, drawing.data, param.point.x, param.point.y)) {
+                                                selectDrawing(drawing, !drawing.selected)
+                                            } else {
+                                                if (no_shift) {selectDrawing(drawing, false);}
+                                            }
+                                        } else {
+                                            if (no_shift) {selectDrawing(drawing, false);}
+                                        }
+                                    }
+                                }
+                                // Display UI for editing drawings
+                                displayDrawEditUI();
+                            }
+
+                            // Get price scale limits
+                            plimits = getPriceLimits();
+
+                            cur_price = getCurrentPrice();
+
+                            // Get current time range
+                            cur_range = chart.timeScale().getVisibleRange();
+
+                            // Horizontal line
+                            if (draw_mode == 'hline') {
+                                // Add to list of drawings
+                                drawings.push({
+                                    'type': 'hline', 
+                                    'id': Math.round(Date.now()),
+                                    'selected': false,
+                                    'color': '#26a69aa5',
+                                    'price': cur_price,
+                                    'visible': true,
+                                    'style': "2",
+                                    'width': 2
+                                }); 
+                            } else if (draw_mode == 'vline') {
+                                if (param.time != undefined) {
+                                    // Add to list of drawings
+                                    drawings.push({
+                                        'type': 'vline', 'time': param.time,
+                                        'id': Math.round(Date.now()),
+                                        'selected': false,
+                                        'color': '#26a69aa5',
+                                        'visible': true,
+                                        'style': "2",
+                                        'width': 2
+                                    });
+                                }
+                            } else if (draw_mode == 'trendline') {
+                                if (param.time != undefined) {
+                                    if (!trendline_) {
+                                        trendline_price1 = cur_price;
+                                        trendline_time1 = param.time;
+                                        trendline_ = true;
+                                    } else {
+                                        // Add to drawings
+                                        drawings.push({
+                                            'type': 'trendline',
+                                            'id': Math.round(Date.now()),
+                                            'selected': false,
+                                            'color': '#26a69aa5',
+                                            'time1': trendline_time1, 'time2': param.time,
+                                            'price1': trendline_price1, 'price2': cur_price,
+                                            'visible': true,
+                                            'style': "2",
+                                            'width': 2
+                                        });
+                                        // Reset values
+                                        trendline_ = null;
+                                        trendline_time1 = null;
+                                        trendline_price1 = null;
+                                        trendline_data = null;
+                                    }
+                                }
+                            } else if (draw_mode == 'fibret') {
+                                if (cur_param.time != undefined) {
+                                    if (!trendline_) {
+                                        trendline_time1 = param.time;
+                                        trendline_price1 = cur_price;
+                                        trendline_ = true;
+                                    } else {
+                                        // Prepare arrays
+                                        cols_ = ['#26a69aa5'];
+                                        styles_ = ['2'];
+                                        widths_ = [2];
+                                        prices_ = [];
+                                        for (i = 0; i < fibret_levels.length; i++) {
+                                            cols_.push('#26a69aa5');
+                                            styles_.push('2');
+                                            widths_.push(2);
+                                            prices_.push(cur_price + (trendline_price1 - cur_price) * fibret_levels[i]);
+                                        }
+                                        // Add to drawings
+                                        drawings.push({
+                                            'type': 'fibret',
+                                            'id': Math.round(Date.now()),
+                                            'selected': false,
+                                            'colors': cols_,
+                                            'time1': trendline_time1, 'time2': param.time,
+                                            'price1': trendline_price1, 'price2': cur_price,
+                                            'visible': true,
+                                            'styles': styles_,
+                                            'widths': widths_,
+                                            'levels': fibret_levels,
+                                            'prices': prices_
+                                        });
+                                        // Reset variables
+                                        trendline_ = null;
+                                        trendline_data = null;
+                                    }
+                                }
+                            }
+                        }
+                    })  
+
+                    // Update vlines lines so that they have height equal to height of price scale; update autoScaleInfoProvider
+                    last_plimits = getPriceLimits();
+                    setInterval(function() {
+                        bi = chart.timeScale().getVisibleLogicalRange();
+
+                        mii = Math.max(Math.round(bi.from), 0);
+                        mai = Math.min(Math.round(bi.to), price_data.length - 1);
+
+                        miv = 1000000000000.0;
+                        mav = 0.0;
+
+                        for (i__ = mii; i__ <= mai; i__++) {
+                            pd_ = price_data[i__];
+                            pdh_ = pd_.high;
+                            pdl_ = pd_.low;
+                            if (pdh_ > mav) {
+                                mav = pdh_;
+                            }
+                            if (pdl_ < miv) {
+                                miv = pdl_;
+                            }
+                        }
+
+                        // Save current highest and lowest prices
+                        cur_lowest_price = miv;
+                        cur_highest_price = mav;
+
+                        // Save position (in px) of current highest and lowest prices
+                        cur_lowest_px = price_series.priceToCoordinate(cur_lowest_price);
+                        cur_highest_px = price_series.priceToCoordinate(cur_highest_price);
+
+                        opts_ = () => ({
+                            priceRange: {
+                                minValue: miv,
+                                maxValue: mav
+                            }, margins: {
+                                above: 0,
+                                below: 0,
+                            }
+                        });
+
+                        price_series.applyOptions(opts_);
+
+                        // Current price range
+                        plimits = getPriceLimits();
+                        cond_ = plimits[0] != last_plimits[0] || plimits[1] != last_plimits[1];
+
+                        // Get current price
+                        cur_price = getCurrentPrice();
+
+                        // Current time range
+                        cur_range = chart.timeScale().getVisibleRange();
+
+                        // 
+                        if (ruler_top) {
+                            ruler_top._internal__series._private__options.autoscaleInfoProvider = opts_;
+                            ruler_bot._internal__series._private__options.autoscaleInfoProvider = opts_;
+                            ruler_fill._internal__series._private__options.autoscaleInfoProvider = opts_;
+                            ruler_start._internal__series._private__options.autoscaleInfoProvider = opts_;
+                            ruler_end._internal__series._private__options.autoscaleInfoProvider = opts_;
+                        }
+                        
+                        if (trendline_ && draw_mode == 'ruler') {
+                            trendline_._internal__series._private__options.autoscaleInfoProvider = opts_;
+                        }
+
+                        // VRVP
+                        if (vrvp && window.vrvp_visible) {
+                            vrvp.data = ta_VRVP(mii, mai, cur_highest_price, cur_lowest_price, window.vrvp_nrows);
+                        }
+
+                        // Check if VRVP is hovered to hide the indicators' tooltip
+                        if (vrvp && window.vrvp_visible) {
+                            try {
+                                hovered_ = false;
+                                x__ = cur_param.point.x * pixelRatio;
+                                y__ = cur_param.point.y * pixelRatio;
+                                for (ii8 = 0; ii8 < window.vrvp_nrows; ii8++) {
+                                    vrvp_pxd = window.vrvp_px_data[ii8];
+                                    if (x__ >= vrvp_pxd.x && y__ >= vrvp_pxd.yl - 1 && y__ <= vrvp_pxd.yh + 1) {
+                                        hovered_ = true;
+                                        break;
+                                    }
+                                }
+                                tooltip_ = $('.ind-tooltip');
+                                if (hovered_) {
+                                    tooltip_.addClass('op0');
+                                } else {
+                                    tooltip_.removeClass('op0');
+                                }
+                            } catch {}
+                        } 
+                    }, 50);
+
+                    // Subscribe to mouse move event
+                    chart.subscribeCrosshairMove(param => {
+                        cur_param = param;
+
+                        if (cur_param.time != undefined) {
+                            last_cur_param_time = cur_param.time;
+                        }
+
+                        pixelRatio = chart._private__chartWidget._private__paneWidgets[0]._private__canvasBinding.pixelRatio;
+
+                        if (mouse_down && draw_mode == 'brush' && brush_init_point) {
+                            if (cur_param.time != undefined) {
+                                brush_data.push({x: param.point.x, y: param.point.y});
+                            }
+                        }
+
+                        // Tooltips
+                        if (
+                            param.point === undefined ||
+                            !param.time ||
+                            param.point.x < 0 ||
+                            param.point.x > container.clientWidth ||
+                            param.point.y < 0 ||
+                            param.point.y > container.clientHeight
+
+                        ) {
+                            // Make values of mains series blank
+                            $('.ms-tooltip > div > div:nth-child(1) > span').text('-');
+                            $('.ms-tooltip > div > div:nth-child(2) > span').text('-');
+                            $('.ms-tooltip > div > div:nth-child(3) > span').text('-');
+                            $('.ms-tooltip > div > div:nth-child(4) > span').text('-');
+                            $('.ms-tooltip > div > span').text('-');
+                            $('.ms-tooltip').removeClass('green').removeClass('red');
+
+                            // Make values of indicators blank
+                            $('.ind-tooltip div[ind="ind-ma-ribbon"] div:nth-child(2)').text('-');
+                            $('.ind-tooltip div[ind="ind-vol"] div:nth-child(2)').text('-');
+                            $('.ind-tooltip div[ind="ind-macd"] div:nth-child(2)').text('-');
+                            $('.ind-tooltip div[ind="ind-rsi"] div:nth-child(2)').text('-');
+
+                            $('.ind-tooltip div[ind="ind-ma-ribbon"] div:nth-child(2)').css('color', $('#ind-ma-ribbon .visibility').hasClass('yes') ? 'var(--text)' : 'gray');
+                            $('.ind-tooltip div[ind="ind-vol"] div:nth-child(2)').css('color', $('#ind-vol .visibility').hasClass('yes') ? 'var(--text)' : 'gray');
+                            $('.ind-tooltip div[ind="ind-macd"] div:nth-child(2)').css('color', $('#ind-macd .visibility').hasClass('yes') ? 'var(--text)' : 'gray');
+                            $('.ind-tooltip div[ind="ind-rsi"] div:nth-child(2)').css('color', $('#ind-rsi .visibility').hasClass('yes') ? 'var(--text)' : 'gray');
+                        } else {
+                            // Fill values for main series price
+                            $('.ms-tooltip').removeClass('op0');
+                            price = param.seriesPrices.get(price_series);
+                            
+                            $('.ms-tooltip > div > div:nth-child(1) > span').text(price.open);
+                            $('.ms-tooltip > div > div:nth-child(2) > span').text(price.high);
+                            $('.ms-tooltip > div > div:nth-child(3) > span').text(price.low);
+                            $('.ms-tooltip > div > div:nth-child(4) > span').text(price.close);
+                            //
+                            k = Math.pow(10, price_k);
+                            //
+                            ch = String(Math.round(Math.abs(price.close - price.open) * k) / k);
+                            chp = String(Math.round(ch / price.open * 10000) / 100);
+                            if (price.close >= price.open) {
+                                $('.ms-tooltip').addClass('green').removeClass('red');
+                                $('.ms-tooltip > div > span').text('+' + ch + ' (+' + chp + '%)');
+                            } else {
+                                $('.ms-tooltip').removeClass('green').addClass('red');
+                                $('.ms-tooltip > div > span').text('-' + ch + ' (-' + chp + '%)');
+                            }
+
+                            // Fill values for MA Ribbon
+                            if (ribbon_ma) {
+                                if ($('#ind-ma-ribbon').length > 0) {
+                                    $('.ind-tooltip div[ind="ind-ma-ribbon"]:not(:first)').each(function(i, el) {
+                                        for (j = 0; j < ribbon_ma['data'].length; j++) {
+                                            if (ribbon_ma['data'][j].cid == i) {
+                                                ma_ribbon_price = param.seriesPrices.get(ribbon_ma['data'][j]);
+                                                ma_ribbon_price = String(Math.round(ma_ribbon_price * k) / k);
+                                                div1_ = $(el).find('div:nth-child(1)');
+                                                div2_ = $(el).find('div:nth-child(2)');
+                                                if ($('#ind-ma-ribbon .visibility').hasClass('yes')) {
+                                                    div2_.text(String(ma_ribbon_price));
+                                                    div1_.css('color', 'var(--blue)');
+                                                    div2_.css('color', 'var(--text)');
+                                                } else {
+                                                    div2_.text('-');
+                                                    div1_.css('color', 'gray');
+                                                    div2_.css('color', 'gray');
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }) 
+                                }
+                            }
+
+                            // Volume
+                            if (vol_) {
+                                if ($('#ind-vol').length > 0) {
+                                    vol_p = param.seriesPrices.get(vol_['data'][0]);
+                                    volume_price = formatVolume(vol_p);
+                                    volume_price_col = price.close >= price.open ? "--green" : "--red";
+                                    div1_ = $('.ind-tooltip div[ind="ind-vol"] div:nth-child(1)');
+                                    div2_ = $('.ind-tooltip div[ind="ind-vol"] div:nth-child(2)');
+                                    if ($('#ind-vol .visibility').hasClass('yes')) {
+                                        div2_.text(String(volume_price));
+                                        div2_.css('color', 'var(' + volume_price_col + ')');
+                                        div1_.css('color', 'var(--blue)');
+                                    } else {
+                                        div2_.text('-');
+                                        div2_.css('color', 'gray');
+                                        div1_.css('color', 'gray');
+                                    }
+                                }
+                            }
+
+                            // MACD
+                            if (macd_) {
+                                if ($('#ind-macd').length > 0) {
+                                    macd_price = param.seriesPrices.get(macd_['data'][1]);
+                                    macd_price_col = macd_price >= 0 ? "--green" : (macd_price < 0 ? "--red" : "--text");
+                                    macd_price = String(Math.round(macd_price * k) / k);
+                                    div1_ = $('.ind-tooltip div[ind="ind-macd"] div:nth-child(1)');
+                                    div2_ = $('.ind-tooltip div[ind="ind-macd"] div:nth-child(2)');
+                                    if ($('#ind-macd .visibility').hasClass('yes')) {
+                                        div2_.text(String(macd_price));
+                                        div2_.css('color', 'var(' + macd_price_col + ')');
+                                        div1_.css('color', 'var(--blue)');
+                                    } else {
+                                        div2_.text('-');
+                                        div2_.css('color', 'gray');
+                                        div1_.css('color', 'gray');
+                                    }
+                                }
+                            }
+
+                            // RSI
+                            if (rsi) {
+                                if ($('#ind-rsi').length > 0) {
+                                    rsi_price = param.seriesPrices.get(rsi['data'][0]);
+                                    rsi_price = String(Math.round(rsi_price * 100) / 100);
+                                    div1_ = $('.ind-tooltip div[ind="ind-rsi"] div:nth-child(1)');
+                                    div2_ = $('.ind-tooltip div[ind="ind-rsi"] div:nth-child(2)');
+                                    if ($('#ind-rsi .visibility').hasClass('yes')) {
+                                        div2_.text(String(rsi_price));
+                                        div2_.css('color', 'var(--text)');
+                                        div1_.css('color', 'var(--blue)');
+                                    } else {
+                                        div2_.text('-');
+                                        div2_.css('color', 'gray');
+                                        div1_.css('color', 'gray');
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        })
+    </script>
+</html>

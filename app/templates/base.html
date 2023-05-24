@@ -1,0 +1,74 @@
+{% load static %}
+{% load maintags %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/top_menu.css' %}">
+    <script src="{% static 'js/jquery.js' %}"></script>
+
+    <script>
+      function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              var cookies = document.cookie.split(';');
+              for (var i = 0; i < cookies.length; i++) {
+                  var cookie = jQuery.trim(cookies[i]);
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      var csrftoken = getCookie('csrftoken');
+      function csrfSafeMethod(method) {
+          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+          }
+      });
+    </script>
+
+    {% block imports %}{% endblock %}
+  </head>
+
+  <body>
+    <div class="top-menu fr jb">
+        <div class="fr">
+          <div class="fr mr50">
+            <img class="mr20" src="{{all_auth_extra_data.picture}}" width="50" height="50">
+            <div class="fc">
+              {% if user.is_admin %}
+                <div style="font-size: 16pt; color: var(--orange)">Admin</div>
+              {% else %}
+                <div>{{all_auth_extra_data.given_name}}</div>
+                <div>{{all_auth_extra_data.family_name}}</div>
+              {% endif %}
+            </div>
+          </div>
+          <a class="mr50 {% if 'assets' in request.path %}active{% endif %}" href="/assets">Assets</a>
+          {% if user.is_admin %}
+            <a class="mr50 {% if 'users' in request.path %}active{% endif %}" href="/users">Users</a>
+          {% else %}
+            <a class="mr50 {% if 'account' in request.path %}active{% endif %}" href="/account">Account</a>
+          {% endif %}
+        </div>
+        <a class="red" href="/logout">Logout</a>
+    </div>
+
+    <div class="p20 pi50">
+        {% block content %}{% endblock %}
+    </div>
+  </body>
+</html> 

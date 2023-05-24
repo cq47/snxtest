@@ -1,0 +1,573 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load maintags %}
+
+{% block title %}
+    Account
+{% endblock %}
+
+{% block imports %}
+    <script src="{% static 'js/row_ui_utils.js' %}"></script>   
+    <link rel="stylesheet" type="text/css" href="{% static 'css/assets_list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/account.css' %}">
+
+    <style>
+        .balance-edit {
+            transition: all 0.2s ease;
+        }
+        .balance-edit:hover {
+            transform: scale(1.1);
+        }
+
+        input, input:focus {
+            outline: none;
+            border: none;
+        }
+
+        .buttons > div > div {
+            width: auto;
+            padding: 5px;
+            padding-inline: 10px;
+            border-radius: 10px;
+            background-color: var(--red);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 28.5px;
+            width: 120px;
+            text-align: center;
+        }
+
+        .buttons > div > div.inactive {
+            opacity: 0.5;
+        }
+
+        .buttons > div > div:not(.inactive):hover {
+            transform: scale(1.02);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if not user_ in '01' %}
+        <div class="row-ui account fc ch p20 mt10" style="height: calc(100vh - 163px)">
+            <div class="fr jb mb10 pl10">
+                {% if user.is_admin and all_auth_extra_data_user_ %}
+                    <div class="fr mr20" style="font-size: 14pt;">
+                        <img style="border-radius: 100%;" class="mr20" src="{{all_auth_extra_data_user_.picture}}" width="65" height="65">
+                        <div class="fc" style="margin-top: 12px; opacity: 0.5;">
+                            <div>{{all_auth_extra_data_user_.given_name}}</div>
+                            <div>{{all_auth_extra_data_user_.family_name}}</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if user.is_admin %}
+                    <div class="fc buttons" style="margin-right: 100px;">
+                        <div class="fr mb10">
+                            <div class="mr10 btn-deactivate {% if not user_.is_active %}inactive{% endif %}" style="background-color: var(--black-hover-hover);">Deactivate</div>
+                            <div class="btn-activate {% if user_.is_active %}inactive{% endif %}" style="background-color: var(--green);">Activate</div>
+                        </div>
+                        <div class="fr">
+                            <div class="mr10 btn-delete" style="background-color: var(--red);">Delete</div>
+                            <div class="btn-save inactive" style="background-color: var(--blue);">Save</div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="fr w100 jb">
+                    <div class="fc item">
+                        <div>Total balance</div>
+                        <div class="fr">
+                            {% if user.is_admin %}
+                                <input data-last-value="" name="balance" type="text" value="" style="font-size: 32pt; font-weight: bold; margin-top: 8px; padding: 8px 5px 5px; width: 11ch; margin-left: -7px">
+                            {% else %}
+                                <div>{{user_.balance | balance_filter}}$</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="fc item">
+                        <div>Total PnL</div>
+                        <div class="fr">
+                            <div class="{{total_pnl | price_perc_class}}">{{total_pnl | price_char}}{{total_pnl | balance_filter}}$</div>
+                            <div class="{{total_pnl | price_perc_class}}">({{total_pnl_perc}}%)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fr jb">
+                <div class="input-select">
+                    <select name="blue-type">
+                        <option value="positions">Positions</option>
+                        <option value="orders">Orders</option>
+                    </select>
+                    <span>
+                        <svg width="8" height="14" viewBox="0 0 8 14">
+                            <path fill="none" fill-rule="evenodd" stroke="#5C7AFF" stroke-linecap="square" stroke-width="1.5" d="M2 2l4 5-4 5"></path>
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="type fr ml20">
+                    <div data-type-group="positions" data-type="all" class="active mr10"><span>All</span></div>
+                    <div data-type-group="positions" data-type="open" class="mr10"><span>Open</span></div>
+                    <div data-type-group="positions" data-type="closed"><span>Closed</span></div>
+                    <div data-type-group="orders" data-type="all" class="op0"><span>All</span></div>
+                    <div data-type-group="orders" data-type="pending" class="op0"><span>Pending</span></div>
+                    <div data-type-group="orders" data-type="filled" class="op0"><span>Filled</span></div>
+                    <div data-type-group="orders" data-type="cancelled" class="op0"><span>Cancelled</span></div>
+                    <div data-type-group="orders" data-type="rejected" class="op0"><span>Rejected</span></div>
+                </div>
+            </div>
+
+            <span class="icon-more op0" style="top: calc(100vh - 63px)">
+                <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                    <path fill="none" fill-rule="evenodd" stroke="#5C7AFF55" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+                </svg>
+                <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                    <path fill="none" fill-rule="evenodd" stroke="#5C7AFFa1" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+                </svg>
+                <svg width="8" height="14" viewBox="0 0 8 14" style="position: absolute">
+                    <path fill="none" fill-rule="evenodd" stroke="#5C7AFF" stroke-linecap="square" stroke-width="1" d="M2 2l4 5-4 5"></path>
+                </svg>
+            </span>
+
+            <div data-type-group="orders" class="title-row fr pi20 jb mt20 op0">
+                <div class="fr jb" style="width: 250px">
+                    <div>Date</div>
+                    <div>Status</div>
+                </div>
+                <div class="fr">
+                    <div style="width: 200px">Symbol</div>
+                    <div style="width: 100px" class="ml20">Type</div>
+                    <div style="width: 70px" class="ml20">Side</div>
+                    <div style="width: 100px" class="ml20">Price</div>
+                    <div style="width: 200px" class="ml20 mr40">Amount</div>
+                </div>
+            </div>
+
+            <div data-type-group="positions" class="title-row fr pi20 jb mt20">
+                <div class="fr jb" style="width: 250px">
+                    <div style="margin-top: 21px">Date</div>
+                    <div style="margin-top: 21px">Status</div>
+                </div>
+                <div class="fr">
+                    <div style="margin-top: 21px">Symbol</div>
+                    <div style="margin-top: 21px" class="ml20">Side</div>
+                    <div class="ml20">Entry Price</div>
+                    <div class="ml20">Exit Price</div>
+                    <div style="margin-top: 21px" class="ml20">Amount</div>
+                    <div style="margin-top: 21px" class="ml20 {% if not user.is_admin %}mr40{% endif %}">P/L</div>
+                </div>
+            </div>
+
+            <div class="fc p10 h100 scroller" style="overflow: scroll">
+                {% for i in posord_all %}
+                    {% for j in i.data %}
+                        {% if j.data %}
+                            <div id="group-{{i.type}}-{{j.type}}" class="asset-mini-list op0">
+                                {% for item in j.data %}
+                                    {% if i.type == 'orders' %}
+                                        <div class="fr jb asset pi10 row order {% if item.status != 'p' %}closed{% endif %}">
+                                            <div class="fr jb" style="width: 250px">
+                                                <div class="fc">
+                                                    <div style="font-size: 14pt">{{item.date | dtformat_date}}</div>
+                                                    <div style="margin-top: 5px; opacity: 0.5">{{item.date | dtformat_time}}</div>
+                                                </div>
+                                                <div style="margin-top: 13px; opacity: 1; color: var(--{{item.status | order_status_color_filter}})">{{item.status | order_status_filter}}</div>
+                                            </div>
+                                            <div class="fr">
+                                                <div class="ml20" style="width: 200px; margin-top: 5px">{{item.asset_name}}</div>
+                                                <div class="ml20" style="width: 100px; margin-top: 5px">{{item.order_type | order_type_filter}}</div>
+                                                <div class="ml20" style="width: 70px; margin-top: 5px">{{item.side | order_side_filter}}</div>
+                                                <div class="ml20" style="width: 100px; margin-top: 5px">{{item.price}}</div>
+                                                <div class="ml20" style="width: 200px; margin-top: 5px; text-align: right;">{{item.size | balance_filter}}{% if item.size_type == 't' %}${% else %}#{% endif %}</div>
+                                                {% if not user.is_admin %}
+                                                    {% if item.status == 'p' and item.order_type == 'l' %}
+                                                        <div class="ml20 icon-close" style="width: 20px!important">
+                                                            <img class="close cf-red" data-order-id="{{item.id}}" data-instrument-id="{{item.iid}}" style="margin-top: 3px" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -2.5px; right: 0">
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="ml20" style="width: 20px!important; height: 20px"></div>    
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% elif i.type == 'positions' %}
+                                        <div class="fr jb asset pi10 row position {% if item.status == 'c' %}closed{% endif %}">
+                                            <div class="fr jb" style="width: 250px">
+                                                <div class="fc">
+                                                    <div style="font-size: 14pt">{{item.date | dtformat_date}}</div>
+                                                    <div style="margin-top: 5px; opacity: 0.5">{{item.date | dtformat_time}}</div>
+                                                </div>
+                                                <div style="margin-top: 13px; opacity: 1;">{% if item.status == 'c' %}Closed{% else %}Open{% endif %}</div>
+                                            </div>
+                                            <div class="fr">
+                                                <div class="ml20" style="margin-top: 5px">{{item.asset_name}}</div>
+                                                <div class="ml20" style="margin-top: 5px">{{item.side | order_side_filter}}</div>
+                                                <div class="ml20" style="margin-top: 5px">{{item.entry_price}}</div>
+                                                <div class="ml20" style="margin-top: 5px">{% if item.status == 'c' %}{{item.exit_price}}{% else %}-{% endif %}</div>
+                                                <div class="ml20" style="margin-top: 5px">{{item.size | balance_filter}}{% if item.size_type == 't' %}${% else %}#{% endif %}</div>
+                                                <div class="{{item.pnl | price_perc_class}} ml20" style="margin-top: -3px">{{item.get_dollar_pnl}}$ ({{item.pnl | price_perc_filter}}%)</div>
+                                                {% if not user.is_admin %}
+                                                    {% if item.status == 'o' %}
+                                                        <div class="ml20 icon-close">
+                                                            <img class="close cf-red" data-pos-id="{{item.id}}" data-instrument-id="{{item.iid}}" style="margin-top: 3px" src="/static/icons/cross.png" width="20" height="20" style="position: absolute; top: -2.5px; right: 0">
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="ml20" style="width: 20px; height: 20px"></div>    
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                <div class="nodata-found ch op0" style="color: var(--text); font-size: 15pt">No data found</div>
+            </div>
+        </div>
+    {% else %}
+        <div style="text-align: center; width: 400px; position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%); font-size: 32pt;">
+            {% if user_ == '0' %}
+                You do not have access to this account
+            {% else %}
+                User not found
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <script>
+        Object.defineProperty(String.prototype, 'capitalize', {
+            value: function() {
+                return this.charAt(0).toUpperCase() + this.slice(1);
+            },
+            enumerable: false
+        });
+
+        // When we scroll the list of orders/positions
+        $('.row-ui > div:last-child').scroll(function() {
+            if($(this).scrollTop() + $(this).height() >= $(this)[0].scrollHeight - 41){
+                $('.icon-more').addClass('up');
+            } else {
+                $('.icon-more').removeClass('up');
+            }
+        })
+
+        // When we click on cancel order button
+        function orderOnCancel(socket_, this_) {
+            // Send message to ws
+            socket_.send(JSON.stringify({
+                't': 'co',
+                'd': {
+                    'iid': $(this_).attr('data-instrument-id'),
+                    'id': $(this_).attr('data-order-id')
+                }
+            }))
+        }
+
+        // When position close button is clicked
+        function positionOnClose(socket_, this_) {
+            // Send message to ws
+            socket_.send(JSON.stringify({
+                't': 'clp',
+                'd': {
+                    'iid': $(this_).attr('data-instrument-id'),
+                    'id': $(this_).attr('data-pos-id')
+                }
+            }))
+        }
+
+        $(window).on('load', function() {
+            // Setup width of select
+            $('.input-select > select').each(function(i, el) {
+                setupSelectWidth(el);
+            })
+            // Display assets
+            showAssets();
+            {% if user.is_admin %}
+                // Set width of balance input
+                $('input[name="balance"]').css('width', String("{{user_.balance | balance_filter}}".length + 2) + 'ch').val("{{user_.balance | balance_filter}}$").attr('data-last-value', "{{user_.balance | balance_filter}}$");
+            {% endif %}
+
+
+            // Websocket for account / trading updates
+            const socket_account = new WebSocket(
+                (location.protocol === 'https:' ? 'wss' : 'ws') + '://'
+                + window.location.host
+                + '/ws/account/'
+                + '{{user.id}}'
+            );
+
+            socket_account.onmessage = function(e) {
+                e = JSON.parse(e['data']);
+
+                msg_type = null;
+                msg_text = null;
+
+                // If everything ok on server
+                if (e['s'] == 'ok') {
+                    // If an order was cancelled / rejected or filled
+                    if (e['t'] == 'co_') {
+                        msg_text = '';
+                        text_color = 'text';
+                        cls_ = '';
+                        if (e['os'] == 'c') {
+                            msg_text = 'Order cancelled';
+                            cls_ = 'cancelled';
+                        } else if (e['os'] == 'r') {
+                            msg_text = 'Order rejected';
+                            text_color = 'red';
+                            cls_ = 'rejected';
+                        } else if (e['os'] == 'f') {
+                            msg_text = 'Order filled';
+                            text_color = 'blue';
+                            cls_ = 'filled';
+                        }
+                        
+                        order_id = e['d']['id'];
+                        el = $('.order img[data-order-id="' + order_id + '"]').closest('.order');
+                        $(el).addClass('closed');
+
+                        status_el = $(el).find('> div:nth-child(1) > div:nth-child(2)');
+                        $(status_el).text(msg_text.split(' ')[1].capitalize()).css('color', 'var(--' + text_color + ')');
+
+                        $(el).find('img.close').remove();
+                        html_ = $(el).clone();  
+                        $(el).remove();
+                        if (html_.length > 1) {
+                            html_ = html_[0];
+                        }
+                        html1_ = $(html_).clone();
+
+                        $('#group-orders-all .order img.close[data-order-id="' + order_id + '"]').closest('.order').remove();
+                        $('#group-orders-pending .order img.close[data-order-id="' + order_id + '"]').closest('.order').remove();
+
+                        first_closed = $('#group-orders-all .order.closed');
+                        if (first_closed.length > 0) {
+                            $(first_closed.get(0)).before(html1_);
+                        } else {
+                            $('#group-orders-all').append(html1_);
+                        }
+
+                        $('#group-orders-' + cls_).prepend(html_);
+                    } else if (e['t'] == 'clp_') {  // position closed
+                        msg_text = 'Position closed';
+
+                        pos_id = e['d']['id'];
+                        el = $('.position img[data-pos-id="' + pos_id + '"]').closest('.position');
+                        $(el).addClass('closed');
+                        $(el).find('img.close').remove();
+
+                        status_el = $(el).find('> div:first-child > div:last-child');
+                        $(status_el).text('Closed');
+
+                        $(el).find('> div:nth-child(2) > div:nth-child(4)').text(e['d']['exp']);
+
+                        html_ = $(el).clone();  
+                        $(el).remove();
+                        if (html_.length > 1) {
+                            html_ = html_[0];
+                        }
+                        html1_ = $(html_).clone();
+
+                        $('#group-positions-all .position img.close[data-pos-id="' + pos_id + '"]').closest('.position').remove();
+                        $('#group-positions-open .position img.close[data-pos-id="' + pos_id + '"]').closest('.position').remove();
+
+                        first_closed = $('#group-positions-all .position.closed');
+                        if (first_closed.length > 0) {
+                            $($(first_closed).get(0)).before(html1_);
+                        } else {
+                            $('#group-positions-all').append(html1_);
+                        }
+
+                        $('#group-positions-closed').prepend(html_);
+                    }
+
+                    msg_type = 'msg';
+                } else {
+                    if (e['s'] != undefined) {
+                        msg_type = 'msg_err';
+                        msg_text = e['m'];
+                    }
+                }
+
+                if (msg_text == 'Order cancelled') {
+                    // Show error message
+                    id_ = 'msg_' + String(Math.round(Date.now()));
+                    el = document.createElement("div");
+                    el.id = id_;
+                    document.body.appendChild(el);
+                    el.onclick = function() {
+                        $(this).stop().fadeOut(50, function() {
+                            $(this).remove();
+                        })
+                    }
+                    $('#' + id_).addClass(msg_type).text(msg_text);
+                    // Display message duration depending on length of message, but not more than 8s, and not less than 1.5s
+                    msg_dur = Math.max(1500, Math.min(msg_text.length * 40, 8000));
+                    // Make it dissappear after time
+                    $('#' + id_).delay(msg_dur).fadeOut(500, function() {
+                        $('#' + id_).remove();
+                    })
+                }
+            }
+
+            socket_account.onclose = function(e) {
+                console.log('Account websocket closed!')
+            };
+
+
+            // When order cancel button is clicked
+            $('.order .close').each(function(i, el) {
+                el.onclick = function() {
+                    orderOnCancel(socket_account, el);
+                }
+            })
+
+            // When position close button is clicked
+            $('.position .close').each(function(i, el) {
+                el.onclick = function() {
+                    positionOnClose(socket_account, el);
+                }
+            })
+        })
+
+        // Type of list
+        $('.row-ui .type > div').on('click', function() {
+            $(this).parent().find('div').removeClass('active');
+            $(this).addClass('active');
+            showAssets();
+        })
+
+        // Select with arrow clicked
+        $('.input-select > select').on('change', function() {
+            // Hide unwanted options
+            val = $(this).parent().find('option:selected').attr('value');
+            $(this).parent().next('.type').find('div').addClass('op0').removeClass('active');
+            $($(this).parent().next('.type').find('div[data-type-group="' + val + '"]').get(0)).addClass('active');
+            $(this).parent().next('.type').find('div[data-type-group="' + val + '"]').removeClass('op0').addClass('mr10');
+            els = $(this).parent().next('.type').find('div[data-type-group="' + val + '"]');
+            $(els.get(els.length - 1)).removeClass('mr10');
+            //
+            setupSelectWidth(this);
+            showAssets();
+            // Show correct title row
+            $(this).parent().parent().parent().find('.title-row').addClass('op0');
+            $(this).parent().parent().parent().find('.title-row[data-type-group="' + val + '"]').removeClass('op0');
+        })
+
+        {% if user.is_admin %}
+            // Send AJAX request to API
+            function sendRequest(action_, ids_, this_, data_={}) {
+                $(this_).addClass('loading');
+                $.ajax({
+                    url: '/api/users/action',
+                    type: "POST",
+                    dataType: 'json',
+                    data: {
+                        'ids': ids_,
+                        'action': action_,
+                        'data': JSON.stringify(data_)
+                    },
+                    success: (data) => {
+                        if (action_ == 'delete') {
+                            window.location = '/users';
+                        } else {
+                            window.location.reload();
+                        }
+                    },
+                    error: (error) => {
+                        window.location.reload();
+                    }
+                });
+            }
+
+            // Buttons
+            $('.btn-deactivate').on('click', function() {
+                if (!$(this).hasClass('inactive')) {
+                    sendRequest('deactivate', [{{user_.id}}], this);
+                }
+            })
+
+            $('.btn-activate').on('click', function() {
+                if (!$(this).hasClass('inactive')) {
+                    sendRequest('activate', [{{user_.id}}], this);
+                }
+            })
+
+            $('.btn-delete').on('click', function() {
+                sendRequest('delete', [{{user_.id}}], this);
+            })
+
+            $('.btn-save').on('click', function() {
+                bal_ = $('input[name="balance"]').val();
+                balance = "";
+                for (i = 0; i < bal_.length; i++) {
+                    if (bal_[i] != ',') {
+                        balance += bal_[i];
+                    }
+                }
+                try {
+                    balance = parseFloat(balance);
+                } catch {
+                    balance = 0.0;
+                }
+
+                sendRequest('save', [{{user_.id}}], this, {
+                    balance: balance
+                });
+            })
+
+            // On change of balance input
+            $('input[name="balance"]').on('change', function() {
+                last_val = $(this).attr('data-last-value');
+                try {
+                    v = "";
+                    val_ = $(this).val();
+                    for (i = 0; i < val_.length; i++) {
+                        if (val_[i] != ',') {
+                            v += val_[i];
+                        }
+                    }
+                    pfv = parseFloat(v);
+
+                    if (!isNaN(pfv)) {
+                        if (pfv > 1000000000) {
+                            $(this).val('1,000,000,000.00$').attr('data-last-value', '1,000,000,000.00$').css('width', '18ch');
+                        } else if (pfv < 0) {
+                            $(this).val('0.00$').attr('data-last-value', '0.00$').css('width', '6ch');
+                        } else {
+                            val = String((Math.round(pfv * 100) / 100).toFixed(2));
+                            fin__ = val.slice(-2);
+                            fin = "";
+                            j = 0;
+                            for (i = val.length - 3; i >= 0; i--) {
+                                fin += val[i];
+                                if ((j % 3 == 0) && (j != 0) && (j != val.length - 3)) {
+                                    fin += ',';
+                                }
+                                j += 1;
+                            }
+                            fin_ = '';
+                            for (i = fin.length - 1; i >= 0; i--) {
+                                fin_ += fin[i];
+                            }
+                            fin_ += fin__ + '$';
+                            $(this).val(fin_).attr('data-last-value', fin_).css('width', String(fin_.length + 2) + 'ch');
+                        }
+                        $('.btn-save').removeClass('inactive');
+                    } else {
+                        $(this).val(last_val);
+                    }
+                } catch {
+                    $(this).val(last_val);
+                }
+            })
+        {% endif %}
+    </script>
+{% endblock %}

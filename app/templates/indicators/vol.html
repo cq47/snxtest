@@ -1,0 +1,15 @@
+{% load static %}
+<!-- Volume -->
+<div id="ind-vol" class="ind">
+    <div class="sep" style="top: 46%"></div>
+    <span onclick="indRowOnClick(event, this)" style="top: 48%">
+        <span vis-color="#5C7AFF" style="color: #5C7AFF">Volume</span>
+        <div style="display: inline-block; width: 10px; height: 10px; position: relative">
+            <img series-list-name="vol_" class="close cf-gray" src="/static/icons/cross.png" width="16" height="16" style="position: absolute; top: -2.5px; left: -2px">
+        </div>
+        <div class="visibility yes" onclick="visibilityOnClick(this, vol_)" style="display: inline-block; width: 10px; height: 10px; position: relative; margin-left: 7px">
+            <img class="cf-gray no visimg" src="/static/icons/eyec.png" width="20" height="20" style="top: -4.5px; left: -5px">
+            <img class="cf-gray yes visimg" src="/static/icons/eye.png" width="20" height="20" style="top: -4.5px; left: -5px">
+        </div>
+    </span>
+</div>
